@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:alpine
+    ports:
+      - 5443:5432
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    volumes:
+      - ./postgres_service/data:/var/lib/postgresql
+      - ./postgres_service/setup:/docker-entrypoint-initdb.d
+  node:
+    build: ./node_service/
+    depends_on:
+      - postgres
+    ports:
+      - 8080:3000
+    environment:
+      - PGHOST=postgres
+      - PGUSER=$PGUSER
+      - PGDATABASE=$PGDATABASE
+      - PGPASSWORD=$PGPASSWORD
+      - PGPORT=5443
