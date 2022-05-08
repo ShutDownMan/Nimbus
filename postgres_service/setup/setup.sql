@@ -3,13 +3,22 @@
 -- PostgreSQL version: 14.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
+-- object: smartfarmer | type: ROLE --
+-- DROP ROLE IF EXISTS smartfarmer;
+-- CREATE ROLE smartfarmer WITH 
+-- 	CREATEDB
+-- 	LOGIN
+-- 	ENCRYPTED PASSWORD 'labiot2020.';
+-- ddl-end --
+
 
 -- Database creation must be performed outside a multi lined SQL file. 
 -- These commands were put in this file only as a convenience.
 -- 
 -- object: "SmartFarm" | type: DATABASE --
 -- DROP DATABASE IF EXISTS "SmartFarm";
-CREATE DATABASE "SmartFarm";
+-- CREATE DATABASE "SmartFarm"
+-- 	OWNER = smartfarmer;
 -- ddl-end --
 
 
@@ -19,7 +28,7 @@ CREATE TABLE public."Station" (
 	id serial NOT NULL,
 	code integer NOT NULL,
 	description text,
-	"creationTS" timestamp with time zone GENERATED ALWAYS AS (now()) STORED,
+	"creationTS" timestamp with time zone DEFAULT now(),
 	active boolean NOT NULL DEFAULT true,
 	"deactivationTS" timestamp with time zone,
 	"id_StationModel" integer,
@@ -27,7 +36,7 @@ CREATE TABLE public."Station" (
 	CONSTRAINT "Station_Code_Unique" UNIQUE (code)
 );
 -- ddl-end --
-ALTER TABLE public."Station" OWNER TO postgres;
+ALTER TABLE public."Station" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: public."StationModel" | type: TABLE --
@@ -41,7 +50,7 @@ CREATE TABLE public."StationModel" (
 	CONSTRAINT "StationModel_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."StationModel" OWNER TO postgres;
+ALTER TABLE public."StationModel" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "StationModel_fk" | type: CONSTRAINT --
@@ -60,7 +69,7 @@ CREATE TABLE public."Station_Sensor" (
 	CONSTRAINT "StationSensor_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."Station_Sensor" OWNER TO postgres;
+ALTER TABLE public."Station_Sensor" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: public."Sensor" | type: TABLE --
@@ -78,7 +87,7 @@ CREATE TABLE public."Sensor" (
 -- ddl-end --
 COMMENT ON COLUMN public."Sensor".code IS E'The self-reporting code given by the stations sensors';
 -- ddl-end --
-ALTER TABLE public."Sensor" OWNER TO postgres;
+ALTER TABLE public."Sensor" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "StationModel_fk" | type: CONSTRAINT --
@@ -106,7 +115,7 @@ CREATE TABLE public."MeasurementUnit" (
 	CONSTRAINT "MeasurementUnit_Code_Unique" UNIQUE (code)
 );
 -- ddl-end --
-ALTER TABLE public."MeasurementUnit" OWNER TO postgres;
+ALTER TABLE public."MeasurementUnit" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: public."MeasurementUnit_Sensor" | type: TABLE --
@@ -128,7 +137,7 @@ COMMENT ON COLUMN public."MeasurementUnit_Sensor"."minValue" IS E'Minimum value 
 -- ddl-end --
 COMMENT ON COLUMN public."MeasurementUnit_Sensor"."maxValue" IS E'Maximum value the sensor can report';
 -- ddl-end --
-ALTER TABLE public."MeasurementUnit_Sensor" OWNER TO postgres;
+ALTER TABLE public."MeasurementUnit_Sensor" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "MeasurementUnit_fk" | type: CONSTRAINT --
@@ -154,7 +163,7 @@ CREATE TABLE public."SensorMeasurementConversion" (
 	CONSTRAINT "SensorMeasurementConversion_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."SensorMeasurementConversion" OWNER TO postgres;
+ALTER TABLE public."SensorMeasurementConversion" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "SensorMeasurementConversion_fk" | type: CONSTRAINT --
@@ -173,7 +182,7 @@ CREATE TABLE public."Manufacturer" (
 	CONSTRAINT "Manufacturer_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."Manufacturer" OWNER TO postgres;
+ALTER TABLE public."Manufacturer" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "Manufacturer_fk" | type: CONSTRAINT --
@@ -194,7 +203,7 @@ CREATE TABLE public."MeasuredData" (
 	CONSTRAINT "MeasuredData_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."MeasuredData" OWNER TO postgres;
+ALTER TABLE public."MeasuredData" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "MeasurementUnit_Sensor_fk" | type: CONSTRAINT --
@@ -219,7 +228,7 @@ CREATE TABLE public."TimeSeries" (
 	CONSTRAINT "TimeSeries_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."TimeSeries" OWNER TO postgres;
+ALTER TABLE public."TimeSeries" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: public."TimeSeriesInterval" | type: TABLE --
@@ -230,7 +239,7 @@ CREATE TABLE public."TimeSeriesInterval" (
 	CONSTRAINT "TimeSeriesInterval_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-ALTER TABLE public."TimeSeriesInterval" OWNER TO postgres;
+ALTER TABLE public."TimeSeriesInterval" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: public."TimeSeries_MeasureData" | type: TABLE --
@@ -244,7 +253,7 @@ CREATE TABLE public."TimeSeries_MeasureData" (
 -- ddl-end --
 COMMENT ON TABLE public."TimeSeries_MeasureData" IS E'This table stores the data utilized to calculate the time series';
 -- ddl-end --
-ALTER TABLE public."TimeSeries_MeasureData" OWNER TO postgres;
+ALTER TABLE public."TimeSeries_MeasureData" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "TimeSeries_fk" | type: CONSTRAINT --
@@ -288,7 +297,7 @@ CREATE TABLE public.country (
 	CONSTRAINT "Country_Code_Unique" UNIQUE (code)
 );
 -- ddl-end --
-ALTER TABLE public.country OWNER TO postgres;
+ALTER TABLE public.country OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: country_fk | type: CONSTRAINT --
