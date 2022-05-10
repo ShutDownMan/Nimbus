@@ -19,8 +19,9 @@ services:
     ports:
       - 8080:3000
     environment:
-      - PGHOST=postgres
-      - PGUSER=$${PGUSER}
-      - PGDATABASE=$${PGDATABASE}
-      - PGPASSWORD=$${PGPASSWORD}
-      - PGPORT=5443
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGPORT: 5432
+      PORT: 3000

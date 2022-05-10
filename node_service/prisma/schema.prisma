@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id           Int            @id(map: "country_pk") @default(autoincrement())
+  name         String
+  code         String         @unique(map: "Country_Code_Unique")
+  Manufacturer Manufacturer[]
+}
+
+model Manufacturer {
+  id         Int      @id(map: "Manufacturer_pk") @default(autoincrement())
+  name       String?
+  id_Country Int
+  Country    Country  @relation(fields: [id_Country], references: [id], map: "Country_fk")
+  Sensor     Sensor[]
+}
+
+model MeasuredData {
+  id                             Int                            @id(map: "MeasuredData_pk") @default(autoincrement())
+  rawValue                       Float
+  convertedValue                 Float?
+  timestamp                      DateTime?                      @db.Timestamptz(6)
+  code                           Int
+  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
+  TimeSeries_MeasureData         TimeSeries_MeasureData[]
+}
+
+model MeasurementUnit {
+  id                             Int                              @id(map: "MeasurementUnit_pk") @default(autoincrement())
+  code                           Int                              @unique(map: "MeasurementUnit_Code_Unique")
+  name                           String?
+  description                    String?
+  MeasurementUnit_Sensor         MeasurementUnit_Sensor[]
+  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
+}
+
+model MeasurementUnit_Sensor {
+  id                             Int                          @id(map: "MeasurementUnit_Sensor_pk") @default(autoincrement())
+  id_MeasurementUnit             Int?
+  id_SensorMeasurementConversion Int?
+  precision                      Float?
+  minValue                       Float?
+  maxValue                       Float?
+  id_Sensor                      Int?
+  MeasurementUnit                MeasurementUnit?             @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
+  Sensor                         Sensor?                      @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
+  SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], map: "SensorMeasurementConversion_fk")
+}
+
+model Sensor {
+  id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
+  code                           Int                              @unique(map: "Sensor_Code_Unique")
+  serial                         Int?
+  SKU                            String?
+  lifespan                       Unsupported("interval")?
+  id_Manufacturer                Int?
+  Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], map: "Manufacturer_fk")
+  MeasurementUnit_Sensor         MeasurementUnit_Sensor[]
+  Station_Sensor                 Station_Sensor[]
+  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
+}
+
+model SensorMeasurementConversion {
+  id                     Int                      @id(map: "SensorMeasurementConversion_pk") @default(autoincrement())
+  equation               String?
+  description            String?
+  MeasurementUnit_Sensor MeasurementUnit_Sensor[]
+}
+
+model Station {
+  id                             Int                              @id(map: "Station_pk") @default(autoincrement())
+  code                           Int                              @unique(map: "Station_Code_Unique")
+  description                    String?
+  creationTS                     DateTime?                        @default(now()) @db.Timestamptz(6)
+  active                         Boolean                          @default(true)
+  deactivationTS                 DateTime?                        @db.Timestamptz(6)
+  id_StationModel                Int?
+  StationModel                   StationModel?                    @relation(fields: [id_StationModel], references: [id], map: "StationModel_fk")
+  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
+}
+
+model StationModel {
+  id             Int              @id(map: "StationModel_pk") @default(autoincrement())
+  name           String?
+  upc            Int?
+  serial         BigInt?
+  description    String?
+  Station        Station[]
+  Station_Sensor Station_Sensor[]
+}
+
+model Station_Sensor {
+  id              Int           @id(map: "StationSensor_pk") @default(autoincrement())
+  id_StationModel Int?
+  id_Sensor       Int?
+  Sensor          Sensor?       @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
+  StationModel    StationModel? @relation(fields: [id_StationModel], references: [id], map: "StationModel_fk")
+}
+
+model Station_Sensor_MeasurementUnit {
+  id                 Int              @id(map: "MeasuredData_Pivot_pk") @default(autoincrement())
+  code               Int              @unique(map: "MeasuredData_Pivot_Code_Unique")
+  id_Station         Int?
+  id_MeasurementUnit Int?
+  id_Sensor          Int?
+  MeasurementUnit    MeasurementUnit? @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
+  Sensor             Sensor?          @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
+  Station            Station?         @relation(fields: [id_Station], references: [id], map: "Station_fk")
+  MeasuredData       MeasuredData[]
+}
+
+model TimeSeries {
+  id                     Int                      @id(map: "TimeSeries_pk") @default(autoincrement())
+  startTS                DateTime                 @db.Timestamptz(6)
+  endTS                  DateTime                 @db.Timestamptz(6)
+  count                  Int?
+  sum                    Float?
+  average                Float?
+  min                    Float?
+  max                    Float?
+  id_TimeSeriesInterval  Int?
+  TimeSeriesInterval     TimeSeriesInterval?      @relation(fields: [id_TimeSeriesInterval], references: [id], map: "TimeSeriesInterval_fk")
+  TimeSeries_MeasureData TimeSeries_MeasureData[]
+}
+
+model TimeSeriesInterval {
+  id          Int          @id(map: "TimeSeriesInterval_pk") @default(autoincrement())
+  description String
+  TimeSeries  TimeSeries[]
+}
+
+model TimeSeries_MeasureData {
+  id              Int           @id(map: "TimeSeries_MeasureData_pk") @default(autoincrement())
+  id_TimeSeries   Int?
+  id_MeasuredData Int?
+  MeasuredData    MeasuredData? @relation(fields: [id_MeasuredData], references: [id], map: "MeasuredData_fk")
+  TimeSeries      TimeSeries?   @relation(fields: [id_TimeSeries], references: [id], map: "TimeSeries_fk")
+}

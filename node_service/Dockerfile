@@ -8,6 +8,8 @@ RUN npm i
 
 COPY . .
 
+RUN npm run dbgenerate
+
 RUN npm run build
 
 EXPOSE 8080
