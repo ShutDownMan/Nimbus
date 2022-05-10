@@ -13,10 +13,11 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
         let stationCode: string = kv_station[0]
         let stations: any = kv_station[1]
 
+        let stationNumericCode: number = Number("0x" + stationCode)
         console.debug(`running through station "${stationCode}"`);
 
         let stationData: Prisma.StationCreateInput = {
-            code: Number("0x" + stationCode)
+            code: stationNumericCode
         };
 
         for (let kv_sensor of Object.entries(stations)) {
@@ -24,10 +25,11 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
             let sensorCode: string = kv_sensor[0]
             let sensors: any = kv_sensor[1]
 
+            let sensorNumericCode: number = Number("0x" + sensorCode)
             console.debug(`running through sensor "${sensorCode}"`);
 
             let sensorData: Prisma.SensorCreateInput = {
-                code: Number("0x" + sensorCode),
+                code: sensorNumericCode,
             };
 
             for (let kv_measurementUnit of Object.entries(sensors)) {
@@ -35,10 +37,11 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
                 let measurementUnitCode: string = kv_measurementUnit[0]
                 let measurementUnits: any = kv_measurementUnit[1]
 
+                let measurementUnitNumericCode: number = Number("0x" + measurementUnitCode)
                 console.debug(`running through measurementUnit "${measurementUnitCode}"`);
 
                 let measurementUnitData: Prisma.MeasurementUnitCreateInput = {
-                    code: Number("0x" + measurementUnitCode)
+                    code: measurementUnitNumericCode,
                 };
 
                 let measureDataCode = Number("0x" + stationCode + sensorCode + measurementUnitCode);
@@ -56,26 +59,26 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
                         code: measureDataCode,
                         MeasurementUnit: {
                             connectOrCreate: {
-                                create: measurementUnitData,
                                 where: {
                                     code: measurementUnitData.code
-                                }
+                                },
+                                create: measurementUnitData
                             }
                         },
                         Sensor: {
                             connectOrCreate: {
-                                create: sensorData,
                                 where: {
                                     code: sensorData.code
-                                }
+                                },
+                                create: sensorData
                             }
                         },
                         Station: {
                             connectOrCreate: {
-                                create: stationData,
                                 where: {
                                     code: stationData.code
-                                }
+                                },
+                                create: stationData
                             }
                         }
                     };

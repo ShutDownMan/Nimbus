@@ -23,13 +23,13 @@ model Manufacturer {
 }
 
 model MeasuredData {
-  id                             Int                            @id(map: "MeasuredData_pk") @default(autoincrement())
-  rawValue                       Float
-  convertedValue                 Float?
-  timestamp                      DateTime?                      @db.Timestamptz(6)
-  code                           Int
-  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
-  TimeSeries_MeasureData         TimeSeries_MeasureData[]
+  id                                  Int                            @id(map: "MeasuredData_pk") @default(autoincrement())
+  rawValue                            Float
+  convertedValue                      Float?
+  timestamp                           DateTime?                      @db.Timestamptz(6)
+  code_Station_Sensor_MeasurementUnit Int
+  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
+  TimeSeries_MeasureData              TimeSeries_MeasureData[]
 }
 
 model MeasurementUnit {
@@ -37,11 +37,31 @@ model MeasurementUnit {
   code                           Int                              @unique(map: "MeasurementUnit_Code_Unique")
   name                           String?
   description                    String?
-  MeasurementUnit_Sensor         MeasurementUnit_Sensor[]
+  Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
   Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
 }
 
-model MeasurementUnit_Sensor {
+model Sensor {
+  id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
+  code                           Int                              @unique(map: "Sensor_Code_Unique")
+  serial                         Int?
+  SKU                            String?
+  lifespan                       Unsupported("interval")?
+  id_Manufacturer                Int?
+  Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], map: "Manufacturer_fk")
+  Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
+  Station_Sensor                 Station_Sensor[]
+  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
+}
+
+model SensorMeasurementConversion {
+  id                     Int                      @id(map: "SensorMeasurementConversion_pk") @default(autoincrement())
+  equation               String?
+  description            String?
+  Sensor_MeasurementUnit Sensor_MeasurementUnit[]
+}
+
+model Sensor_MeasurementUnit {
   id                             Int                          @id(map: "MeasurementUnit_Sensor_pk") @default(autoincrement())
   id_MeasurementUnit             Int?
   id_SensorMeasurementConversion Int?
@@ -54,26 +74,6 @@ model MeasurementUnit_Sensor {
   SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], map: "SensorMeasurementConversion_fk")
 }
 
-model Sensor {
-  id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
-  code                           Int                              @unique(map: "Sensor_Code_Unique")
-  serial                         Int?
-  SKU                            String?
-  lifespan                       Unsupported("interval")?
-  id_Manufacturer                Int?
-  Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], map: "Manufacturer_fk")
-  MeasurementUnit_Sensor         MeasurementUnit_Sensor[]
-  Station_Sensor                 Station_Sensor[]
-  Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
-}
-
-model SensorMeasurementConversion {
-  id                     Int                      @id(map: "SensorMeasurementConversion_pk") @default(autoincrement())
-  equation               String?
-  description            String?
-  MeasurementUnit_Sensor MeasurementUnit_Sensor[]
-}
-
 model Station {
   id                             Int                              @id(map: "Station_pk") @default(autoincrement())
   code                           Int                              @unique(map: "Station_Code_Unique")
@@ -83,25 +83,25 @@ model Station {
   deactivationTS                 DateTime?                        @db.Timestamptz(6)
   id_StationModel                Int?
   StationModel                   StationModel?                    @relation(fields: [id_StationModel], references: [id], map: "StationModel_fk")
+  Station_Sensor                 Station_Sensor[]
   Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
 }
 
 model StationModel {
-  id             Int              @id(map: "StationModel_pk") @default(autoincrement())
-  name           String?
-  upc            Int?
-  serial         BigInt?
-  description    String?
-  Station        Station[]
-  Station_Sensor Station_Sensor[]
+  id          Int       @id(map: "StationModel_pk") @default(autoincrement())
+  name        String?
+  upc         Int?
+  serial      BigInt?
+  description String?
+  Station     Station[]
 }
 
 model Station_Sensor {
-  id              Int           @id(map: "StationSensor_pk") @default(autoincrement())
-  id_StationModel Int?
-  id_Sensor       Int?
-  Sensor          Sensor?       @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
-  StationModel    StationModel? @relation(fields: [id_StationModel], references: [id], map: "StationModel_fk")
+  id         Int      @id(map: "StationSensor_pk") @default(autoincrement())
+  id_Sensor  Int?
+  id_Station Int?
+  Sensor     Sensor?  @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
+  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
 }
 
 model Station_Sensor_MeasurementUnit {
