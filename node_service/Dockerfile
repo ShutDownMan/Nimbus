@@ -8,7 +8,7 @@ RUN npm i
 
 COPY . .
 
-RUN npm run dbgenerate
+RUN npx prisma generate
 
 RUN npm run build
 

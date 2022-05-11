@@ -4,7 +4,7 @@ import PrismaGlobal from "../prisma";
 
 export async function StationHandler(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
     console.debug("Handling Stations");
-    // console.debug(req.body);
+    console.debug(req.body);
 
     const prisma = PrismaGlobal.getInstance().prisma;
 

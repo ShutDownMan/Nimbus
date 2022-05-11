@@ -5,23 +5,9 @@
 -- Model Author: Jedson Gabriel
 -- object: smartfarmer | type: ROLE --
 -- DROP ROLE IF EXISTS smartfarmer;
--- CREATE ROLE smartfarmer WITH 
--- 	CREATEDB
--- 	LOGIN
--- 	ENCRYPTED PASSWORD 'labiot2020.';
+
+SET check_function_bodies = false;
 -- ddl-end --
-
-
--- Database creation must be performed outside a multi lined SQL file. 
--- These commands were put in this file only as a convenience.
--- 
--- object: "SmartFarm" | type: DATABASE --
--- DROP DATABASE IF EXISTS "SmartFarm";
--- CREATE DATABASE "SmartFarm"
--- 	ENCODING = 'UTF8'
--- 	OWNER = smartfarmer;
--- ddl-end --
-
 
 -- object: public."Station" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Station" CASCADE;
@@ -65,8 +51,8 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- DROP TABLE IF EXISTS public."Station_Sensor" CASCADE;
 CREATE TABLE public."Station_Sensor" (
 	id serial NOT NULL,
-	"id_StationModel" integer,
 	"id_Sensor" integer,
+	"id_Station" integer,
 	CONSTRAINT "StationSensor_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -91,13 +77,6 @@ COMMENT ON COLUMN public."Sensor".code IS E'The self-reporting code given by the
 ALTER TABLE public."Sensor" OWNER TO smartfarmer;
 -- ddl-end --
 
--- object: "StationModel_fk" | type: CONSTRAINT --
--- ALTER TABLE public."Station_Sensor" DROP CONSTRAINT IF EXISTS "StationModel_fk" CASCADE;
-ALTER TABLE public."Station_Sensor" ADD CONSTRAINT "StationModel_fk" FOREIGN KEY ("id_StationModel")
-REFERENCES public."StationModel" (id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
--- ddl-end --
-
 -- object: "Sensor_fk" | type: CONSTRAINT --
 -- ALTER TABLE public."Station_Sensor" DROP CONSTRAINT IF EXISTS "Sensor_fk" CASCADE;
 ALTER TABLE public."Station_Sensor" ADD CONSTRAINT "Sensor_fk" FOREIGN KEY ("id_Sensor")
@@ -119,9 +98,9 @@ CREATE TABLE public."MeasurementUnit" (
 ALTER TABLE public."MeasurementUnit" OWNER TO smartfarmer;
 -- ddl-end --
 
--- object: public."MeasurementUnit_Sensor" | type: TABLE --
--- DROP TABLE IF EXISTS public."MeasurementUnit_Sensor" CASCADE;
-CREATE TABLE public."MeasurementUnit_Sensor" (
+-- object: public."Sensor_MeasurementUnit" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Sensor_MeasurementUnit" CASCADE;
+CREATE TABLE public."Sensor_MeasurementUnit" (
 	id serial NOT NULL,
 	"id_MeasurementUnit" integer,
 	"id_SensorMeasurementConversion" integer,
@@ -132,25 +111,25 @@ CREATE TABLE public."MeasurementUnit_Sensor" (
 	CONSTRAINT "MeasurementUnit_Sensor_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
-COMMENT ON COLUMN public."MeasurementUnit_Sensor".precision IS E'Precision of the sensor measurement for this unit';
+COMMENT ON COLUMN public."Sensor_MeasurementUnit".precision IS E'Precision of the sensor measurement for this unit';
 -- ddl-end --
-COMMENT ON COLUMN public."MeasurementUnit_Sensor"."minValue" IS E'Minimum value the sensor can report';
+COMMENT ON COLUMN public."Sensor_MeasurementUnit"."minValue" IS E'Minimum value the sensor can report';
 -- ddl-end --
-COMMENT ON COLUMN public."MeasurementUnit_Sensor"."maxValue" IS E'Maximum value the sensor can report';
+COMMENT ON COLUMN public."Sensor_MeasurementUnit"."maxValue" IS E'Maximum value the sensor can report';
 -- ddl-end --
-ALTER TABLE public."MeasurementUnit_Sensor" OWNER TO smartfarmer;
+ALTER TABLE public."Sensor_MeasurementUnit" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "MeasurementUnit_fk" | type: CONSTRAINT --
--- ALTER TABLE public."MeasurementUnit_Sensor" DROP CONSTRAINT IF EXISTS "MeasurementUnit_fk" CASCADE;
-ALTER TABLE public."MeasurementUnit_Sensor" ADD CONSTRAINT "MeasurementUnit_fk" FOREIGN KEY ("id_MeasurementUnit")
+-- ALTER TABLE public."Sensor_MeasurementUnit" DROP CONSTRAINT IF EXISTS "MeasurementUnit_fk" CASCADE;
+ALTER TABLE public."Sensor_MeasurementUnit" ADD CONSTRAINT "MeasurementUnit_fk" FOREIGN KEY ("id_MeasurementUnit")
 REFERENCES public."MeasurementUnit" (id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: "Sensor_fk" | type: CONSTRAINT --
--- ALTER TABLE public."MeasurementUnit_Sensor" DROP CONSTRAINT IF EXISTS "Sensor_fk" CASCADE;
-ALTER TABLE public."MeasurementUnit_Sensor" ADD CONSTRAINT "Sensor_fk" FOREIGN KEY ("id_Sensor")
+-- ALTER TABLE public."Sensor_MeasurementUnit" DROP CONSTRAINT IF EXISTS "Sensor_fk" CASCADE;
+ALTER TABLE public."Sensor_MeasurementUnit" ADD CONSTRAINT "Sensor_fk" FOREIGN KEY ("id_Sensor")
 REFERENCES public."Sensor" (id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
@@ -168,8 +147,8 @@ ALTER TABLE public."SensorMeasurementConversion" OWNER TO smartfarmer;
 -- ddl-end --
 
 -- object: "SensorMeasurementConversion_fk" | type: CONSTRAINT --
--- ALTER TABLE public."MeasurementUnit_Sensor" DROP CONSTRAINT IF EXISTS "SensorMeasurementConversion_fk" CASCADE;
-ALTER TABLE public."MeasurementUnit_Sensor" ADD CONSTRAINT "SensorMeasurementConversion_fk" FOREIGN KEY ("id_SensorMeasurementConversion")
+-- ALTER TABLE public."Sensor_MeasurementUnit" DROP CONSTRAINT IF EXISTS "SensorMeasurementConversion_fk" CASCADE;
+ALTER TABLE public."Sensor_MeasurementUnit" ADD CONSTRAINT "SensorMeasurementConversion_fk" FOREIGN KEY ("id_SensorMeasurementConversion")
 REFERENCES public."SensorMeasurementConversion" (id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
@@ -200,7 +179,7 @@ CREATE TABLE public."MeasuredData" (
 	"rawValue" double precision NOT NULL,
 	"convertedValue" double precision,
 	"timestamp" timestamp with time zone,
-	code integer NOT NULL,
+	"code_Station_Sensor_MeasurementUnit" integer NOT NULL,
 	CONSTRAINT "MeasuredData_pk" PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -297,8 +276,8 @@ CREATE TABLE public."Station_Sensor_MeasurementUnit" (
 	id serial NOT NULL,
 	code integer NOT NULL,
 	"id_Station" integer,
-	"id_MeasurementUnit" integer,
 	"id_Sensor" integer,
+	"id_MeasurementUnit" integer,
 	CONSTRAINT "MeasuredData_Pivot_pk" PRIMARY KEY (id),
 	CONSTRAINT "MeasuredData_Pivot_Code_Unique" UNIQUE (code)
 );
@@ -327,9 +306,386 @@ REFERENCES public."Sensor" (id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
+-- object: "Station_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Station_Sensor" DROP CONSTRAINT IF EXISTS "Station_fk" CASCADE;
+ALTER TABLE public."Station_Sensor" ADD CONSTRAINT "Station_fk" FOREIGN KEY ("id_Station")
+REFERENCES public."Station" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."Update_SSM_Pivots" | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public."Update_SSM_Pivots"() CASCADE;
+CREATE FUNCTION public."Update_SSM_Pivots" ()
+	RETURNS trigger
+	LANGUAGE plpgsql
+	VOLATILE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+	BEGIN
+
+		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor");
+
+		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit");
+
+		RETURN new;
+	END
+$$;
+-- ddl-end --
+ALTER FUNCTION public."Update_SSM_Pivots"() OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "SSM_Update_Pivot" | type: TRIGGER --
+-- DROP TRIGGER IF EXISTS "SSM_Update_Pivot" ON public."Station_Sensor_MeasurementUnit" CASCADE;
+CREATE TRIGGER "SSM_Update_Pivot"
+	AFTER INSERT 
+	ON public."Station_Sensor_MeasurementUnit"
+	FOR EACH ROW
+	EXECUTE PROCEDURE public."Update_SSM_Pivots"();
+-- ddl-end --
+
+-- object: public."Farm" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Farm" CASCADE;
+CREATE TABLE public."Farm" (
+	id serial NOT NULL,
+	name text,
+	description text,
+	"createdAt" timestamp with time zone DEFAULT NOW(),
+	active boolean,
+	"deactivatedAt" timestamp with time zone,
+	"id_Address" integer,
+	CONSTRAINT "Farm_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Farm" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."Farm_Station" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Farm_Station" CASCADE;
+CREATE TABLE public."Farm_Station" (
+	id serial NOT NULL,
+	"id_Farm" integer,
+	"id_Station" integer,
+	CONSTRAINT "Farm_Station_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Farm_Station" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "Farm_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Farm_Station" DROP CONSTRAINT IF EXISTS "Farm_fk" CASCADE;
+ALTER TABLE public."Farm_Station" ADD CONSTRAINT "Farm_fk" FOREIGN KEY ("id_Farm")
+REFERENCES public."Farm" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Station_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Farm_Station" DROP CONSTRAINT IF EXISTS "Station_fk" CASCADE;
+ALTER TABLE public."Farm_Station" ADD CONSTRAINT "Station_fk" FOREIGN KEY ("id_Station")
+REFERENCES public."Station" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."User" | type: TABLE --
+-- DROP TABLE IF EXISTS public."User" CASCADE;
+CREATE TABLE public."User" (
+	id serial NOT NULL,
+	name text NOT NULL,
+	"firstName" text NOT NULL,
+	"lastName" text NOT NULL,
+	"nickName" text,
+	"passwordHash" text NOT NULL,
+	"createdAt" timestamp with time zone DEFAULT NOW(),
+	active boolean NOT NULL DEFAULT true,
+	"deactivatedAt" timestamp with time zone,
+	"id_Email" integer,
+	"id_Address" integer,
+	CONSTRAINT "User_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."User" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."User_Farm" | type: TABLE --
+-- DROP TABLE IF EXISTS public."User_Farm" CASCADE;
+CREATE TABLE public."User_Farm" (
+	id serial NOT NULL,
+	"id_User" integer,
+	"id_Farm" integer,
+	CONSTRAINT "User_Farm_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."User_Farm" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "User_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User_Farm" DROP CONSTRAINT IF EXISTS "User_fk" CASCADE;
+ALTER TABLE public."User_Farm" ADD CONSTRAINT "User_fk" FOREIGN KEY ("id_User")
+REFERENCES public."User" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Farm_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User_Farm" DROP CONSTRAINT IF EXISTS "Farm_fk" CASCADE;
+ALTER TABLE public."User_Farm" ADD CONSTRAINT "Farm_fk" FOREIGN KEY ("id_Farm")
+REFERENCES public."Farm" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."Email" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Email" CASCADE;
+CREATE TABLE public."Email" (
+	id serial NOT NULL,
+	address text NOT NULL,
+	CONSTRAINT "Email_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Email" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "Email_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User" DROP CONSTRAINT IF EXISTS "Email_fk" CASCADE;
+ALTER TABLE public."User" ADD CONSTRAINT "Email_fk" FOREIGN KEY ("id_Email")
+REFERENCES public."Email" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."Phone" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Phone" CASCADE;
+CREATE TABLE public."Phone" (
+	id serial NOT NULL,
+	"DDD" text,
+	"DDI" text,
+	number text,
+	active boolean NOT NULL DEFAULT true,
+	"id_PhoneType" integer,
+	CONSTRAINT "Phone_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Phone" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."User_Phone" | type: TABLE --
+-- DROP TABLE IF EXISTS public."User_Phone" CASCADE;
+CREATE TABLE public."User_Phone" (
+	id serial NOT NULL,
+	"id_User" integer,
+	"id_Phone" integer,
+	CONSTRAINT "User_Phone_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."User_Phone" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "User_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User_Phone" DROP CONSTRAINT IF EXISTS "User_fk" CASCADE;
+ALTER TABLE public."User_Phone" ADD CONSTRAINT "User_fk" FOREIGN KEY ("id_User")
+REFERENCES public."User" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Phone_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User_Phone" DROP CONSTRAINT IF EXISTS "Phone_fk" CASCADE;
+ALTER TABLE public."User_Phone" ADD CONSTRAINT "Phone_fk" FOREIGN KEY ("id_Phone")
+REFERENCES public."Phone" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."PhoneType" | type: TABLE --
+-- DROP TABLE IF EXISTS public."PhoneType" CASCADE;
+CREATE TABLE public."PhoneType" (
+	id serial NOT NULL,
+	description text NOT NULL,
+	CONSTRAINT "PhoneType_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."PhoneType" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "PhoneType_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Phone" DROP CONSTRAINT IF EXISTS "PhoneType_fk" CASCADE;
+ALTER TABLE public."Phone" ADD CONSTRAINT "PhoneType_fk" FOREIGN KEY ("id_PhoneType")
+REFERENCES public."PhoneType" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."Address" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Address" CASCADE;
+CREATE TABLE public."Address" (
+	id serial NOT NULL,
+	number text,
+	complement text,
+	active boolean NOT NULL DEFAULT true,
+	"id_Area" integer,
+	CONSTRAINT "Address_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Address" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "Address_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."User" DROP CONSTRAINT IF EXISTS "Address_fk" CASCADE;
+ALTER TABLE public."User" ADD CONSTRAINT "Address_fk" FOREIGN KEY ("id_Address")
+REFERENCES public."Address" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Address_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Farm" DROP CONSTRAINT IF EXISTS "Address_fk" CASCADE;
+ALTER TABLE public."Farm" ADD CONSTRAINT "Address_fk" FOREIGN KEY ("id_Address")
+REFERENCES public."Address" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: public."Area" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Area" CASCADE;
+CREATE TABLE public."Area" (
+	id serial NOT NULL,
+	"id_PublicPlace" integer,
+	CONSTRAINT "Area_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."Area" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."PostalArea" | type: TABLE --
+-- DROP TABLE IF EXISTS public."PostalArea" CASCADE;
+CREATE TABLE public."PostalArea" (
+	id serial NOT NULL,
+	"id_District" integer,
+	"id_Area" integer,
+	CONSTRAINT "PostalArea_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."PostalArea" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."District" | type: TABLE --
+-- DROP TABLE IF EXISTS public."District" CASCADE;
+CREATE TABLE public."District" (
+	id serial NOT NULL,
+	"id_City" integer,
+	CONSTRAINT "District_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."District" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."PublicPlace" | type: TABLE --
+-- DROP TABLE IF EXISTS public."PublicPlace" CASCADE;
+CREATE TABLE public."PublicPlace" (
+	id serial NOT NULL,
+	"id_District" integer,
+	"id_PublicPlaceType" integer,
+	CONSTRAINT "PublicPlace_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."PublicPlace" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."PublicPlaceType" | type: TABLE --
+-- DROP TABLE IF EXISTS public."PublicPlaceType" CASCADE;
+CREATE TABLE public."PublicPlaceType" (
+	id serial NOT NULL,
+	name text NOT NULL,
+	CONSTRAINT "PublicPlaceType_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."PublicPlaceType" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."City" | type: TABLE --
+-- DROP TABLE IF EXISTS public."City" CASCADE;
+CREATE TABLE public."City" (
+	id serial NOT NULL,
+	name text,
+	"id_State" integer,
+	CONSTRAINT "City_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."City" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: public."State" | type: TABLE --
+-- DROP TABLE IF EXISTS public."State" CASCADE;
+CREATE TABLE public."State" (
+	id serial NOT NULL,
+	name text,
+	"id_Country" integer,
+	CONSTRAINT "State_pk" PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public."State" OWNER TO smartfarmer;
+-- ddl-end --
+
+-- object: "Country_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."State" DROP CONSTRAINT IF EXISTS "Country_fk" CASCADE;
+ALTER TABLE public."State" ADD CONSTRAINT "Country_fk" FOREIGN KEY ("id_Country")
+REFERENCES public."Country" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "State_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."City" DROP CONSTRAINT IF EXISTS "State_fk" CASCADE;
+ALTER TABLE public."City" ADD CONSTRAINT "State_fk" FOREIGN KEY ("id_State")
+REFERENCES public."State" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "City_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."District" DROP CONSTRAINT IF EXISTS "City_fk" CASCADE;
+ALTER TABLE public."District" ADD CONSTRAINT "City_fk" FOREIGN KEY ("id_City")
+REFERENCES public."City" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "District_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."PostalArea" DROP CONSTRAINT IF EXISTS "District_fk" CASCADE;
+ALTER TABLE public."PostalArea" ADD CONSTRAINT "District_fk" FOREIGN KEY ("id_District")
+REFERENCES public."District" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "District_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."PublicPlace" DROP CONSTRAINT IF EXISTS "District_fk" CASCADE;
+ALTER TABLE public."PublicPlace" ADD CONSTRAINT "District_fk" FOREIGN KEY ("id_District")
+REFERENCES public."District" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "PublicPlace_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Area" DROP CONSTRAINT IF EXISTS "PublicPlace_fk" CASCADE;
+ALTER TABLE public."Area" ADD CONSTRAINT "PublicPlace_fk" FOREIGN KEY ("id_PublicPlace")
+REFERENCES public."PublicPlace" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Area_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."Address" DROP CONSTRAINT IF EXISTS "Area_fk" CASCADE;
+ALTER TABLE public."Address" ADD CONSTRAINT "Area_fk" FOREIGN KEY ("id_Area")
+REFERENCES public."Area" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "Area_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."PostalArea" DROP CONSTRAINT IF EXISTS "Area_fk" CASCADE;
+ALTER TABLE public."PostalArea" ADD CONSTRAINT "Area_fk" FOREIGN KEY ("id_Area")
+REFERENCES public."Area" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: "PublicPlaceType_fk" | type: CONSTRAINT --
+-- ALTER TABLE public."PublicPlace" DROP CONSTRAINT IF EXISTS "PublicPlaceType_fk" CASCADE;
+ALTER TABLE public."PublicPlace" ADD CONSTRAINT "PublicPlaceType_fk" FOREIGN KEY ("id_PublicPlaceType")
+REFERENCES public."PublicPlaceType" (id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
 -- object: "Station_Sensor_MeasurementUnit_fk" | type: CONSTRAINT --
 -- ALTER TABLE public."MeasuredData" DROP CONSTRAINT IF EXISTS "Station_Sensor_MeasurementUnit_fk" CASCADE;
-ALTER TABLE public."MeasuredData" ADD CONSTRAINT "Station_Sensor_MeasurementUnit_fk" FOREIGN KEY (code)
+ALTER TABLE public."MeasuredData" ADD CONSTRAINT "Station_Sensor_MeasurementUnit_fk" FOREIGN KEY ("code_Station_Sensor_MeasurementUnit")
 REFERENCES public."Station_Sensor_MeasurementUnit" (code) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --

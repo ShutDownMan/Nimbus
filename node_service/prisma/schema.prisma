@@ -12,6 +12,7 @@ model Country {
   name         String
   code         String         @unique(map: "Country_Code_Unique")
   Manufacturer Manufacturer[]
+  State        State[]
 }
 
 model Manufacturer {
@@ -83,6 +84,7 @@ model Station {
   deactivationTS                 DateTime?                        @db.Timestamptz(6)
   id_StationModel                Int?
   StationModel                   StationModel?                    @relation(fields: [id_StationModel], references: [id], map: "StationModel_fk")
+  Farm_Station                   Farm_Station[]
   Station_Sensor                 Station_Sensor[]
   Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
 }
@@ -108,8 +110,8 @@ model Station_Sensor_MeasurementUnit {
   id                 Int              @id(map: "MeasuredData_Pivot_pk") @default(autoincrement())
   code               Int              @unique(map: "MeasuredData_Pivot_Code_Unique")
   id_Station         Int?
-  id_MeasurementUnit Int?
   id_Sensor          Int?
+  id_MeasurementUnit Int?
   MeasurementUnit    MeasurementUnit? @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
   Sensor             Sensor?          @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
   Station            Station?         @relation(fields: [id_Station], references: [id], map: "Station_fk")
@@ -142,4 +144,148 @@ model TimeSeries_MeasureData {
   id_MeasuredData Int?
   MeasuredData    MeasuredData? @relation(fields: [id_MeasuredData], references: [id], map: "MeasuredData_fk")
   TimeSeries      TimeSeries?   @relation(fields: [id_TimeSeries], references: [id], map: "TimeSeries_fk")
+}
+
+model Address {
+  id         Int     @id(map: "Address_pk") @default(autoincrement())
+  number     String?
+  complement String?
+  active     Boolean @default(true)
+  id_Area    Int?
+  Area       Area?   @relation(fields: [id_Area], references: [id], map: "Area_fk")
+  Farm       Farm[]
+  User       User[]
+}
+
+model Area {
+  id             Int          @id(map: "Area_pk") @default(autoincrement())
+  id_PublicPlace Int?
+  PublicPlace    PublicPlace? @relation(fields: [id_PublicPlace], references: [id], map: "PublicPlace_fk")
+  Address        Address[]
+  PostalArea     PostalArea[]
+}
+
+model City {
+  id       Int        @id(map: "City_pk") @default(autoincrement())
+  name     String?
+  id_State Int?
+  State    State?     @relation(fields: [id_State], references: [id], map: "State_fk")
+  District District[]
+}
+
+model District {
+  id          Int           @id(map: "District_pk") @default(autoincrement())
+  id_City     Int?
+  City        City?         @relation(fields: [id_City], references: [id], map: "City_fk")
+  PostalArea  PostalArea[]
+  PublicPlace PublicPlace[]
+}
+
+model Email {
+  id      Int    @id(map: "Email_pk") @default(autoincrement())
+  address String
+  User    User[]
+}
+
+model Farm {
+  id            Int            @id(map: "Farm_pk") @default(autoincrement())
+  name          String?
+  description   String?
+  createdAt     DateTime?      @default(now()) @db.Timestamptz(6)
+  active        Boolean?
+  deactivatedAt DateTime?      @db.Timestamptz(6)
+  id_Address    Int?
+  Address       Address?       @relation(fields: [id_Address], references: [id], map: "Address_fk")
+  Farm_Station  Farm_Station[]
+  User_Farm     User_Farm[]
+}
+
+model Farm_Station {
+  id         Int      @id(map: "Farm_Station_pk") @default(autoincrement())
+  id_Farm    Int?
+  id_Station Int?
+  Farm       Farm?    @relation(fields: [id_Farm], references: [id], map: "Farm_fk")
+  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
+}
+
+model Phone {
+  id           Int          @id(map: "Phone_pk") @default(autoincrement())
+  DDD          String?
+  DDI          String?
+  number       String?
+  active       Boolean      @default(true)
+  id_PhoneType Int?
+  PhoneType    PhoneType?   @relation(fields: [id_PhoneType], references: [id], map: "PhoneType_fk")
+  User_Phone   User_Phone[]
+}
+
+model PhoneType {
+  id          Int     @id(map: "PhoneType_pk") @default(autoincrement())
+  description String
+  Phone       Phone[]
+}
+
+model PostalArea {
+  id          Int       @id(map: "PostalArea_pk") @default(autoincrement())
+  id_District Int?
+  id_Area     Int?
+  Area        Area?     @relation(fields: [id_Area], references: [id], map: "Area_fk")
+  District    District? @relation(fields: [id_District], references: [id], map: "District_fk")
+}
+
+model PublicPlace {
+  id                 Int              @id(map: "PublicPlace_pk") @default(autoincrement())
+  id_District        Int?
+  id_PublicPlaceType Int?
+  District           District?        @relation(fields: [id_District], references: [id], map: "District_fk")
+  PublicPlaceType    PublicPlaceType? @relation(fields: [id_PublicPlaceType], references: [id], map: "PublicPlaceType_fk")
+  Area               Area[]
+}
+
+model PublicPlaceType {
+  id          Int           @id(map: "PublicPlaceType_pk") @default(autoincrement())
+  name        String
+  PublicPlace PublicPlace[]
+}
+
+model State {
+  id         Int      @id(map: "State_pk") @default(autoincrement())
+  name       String?
+  id_Country Int?
+  Country    Country? @relation(fields: [id_Country], references: [id], map: "Country_fk")
+  City       City[]
+}
+
+model User {
+  id            Int          @id(map: "User_pk") @default(autoincrement())
+  name          String
+  firstName     String
+  lastName      String
+  nickName      String?
+  passwordHash  String
+  createdAt     DateTime?    @default(now()) @db.Timestamptz(6)
+  active        Boolean      @default(true)
+  deactivatedAt DateTime?    @db.Timestamptz(6)
+  id_Email      Int?
+  id_Address    Int?
+  Address       Address?     @relation(fields: [id_Address], references: [id], map: "Address_fk")
+  Email         Email?       @relation(fields: [id_Email], references: [id], map: "Email_fk")
+  User_Farm     User_Farm[]
+  User_Phone    User_Phone[]
+}
+
+model User_Farm {
+  id      Int   @id(map: "User_Farm_pk") @default(autoincrement())
+  id_User Int?
+  id_Farm Int?
+  Farm    Farm? @relation(fields: [id_Farm], references: [id], map: "Farm_fk")
+  User    User? @relation(fields: [id_User], references: [id], map: "User_fk")
+}
+
+model User_Phone {
+  id       Int    @id(map: "User_Phone_pk") @default(autoincrement())
+  id_User  Int?
+  id_Phone Int?
+  Phone    Phone? @relation(fields: [id_Phone], references: [id], map: "Phone_fk")
+  User     User?  @relation(fields: [id_User], references: [id], map: "User_fk")
 }
