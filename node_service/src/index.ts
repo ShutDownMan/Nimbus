@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { body, validationResult } from 'express-validator';
 import { Pool } from 'pg';
 import { StationHandler } from './station/station';
+import asyncHandler from "express-async-handler"
 
 dotenv.config();
 
@@ -26,5 +27,5 @@ app.get('/', (req: Request, res: Response) => {
 
 app.post(
 	'/Station',
-	StationHandler
+	asyncHandler(StationHandler)
 );

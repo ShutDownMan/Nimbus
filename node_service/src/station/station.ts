@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Prisma } from '@prisma/client'
 import PrismaGlobal from "../prisma";
 
-export async function StationHandler(req: Request, res: Response): Promise<Response<any, Record<string, any>>> {
+export async function StationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     console.debug("Handling Stations");
     console.debug(req.body);
 
@@ -96,12 +96,14 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
                         }
                     };
 
-                    prisma.measuredData.create({
-                        data: measuredData
-                    }).catch((reason: any) => {
-                        console.debug(reason);
-                        return res.status(403).json({ message: "Could not insert measured data" });
-                    });
+                    try {
+                        prisma.measuredData.create({
+                            data: measuredData
+                        });
+                    } catch (error: any) {
+                        console.debug(error);
+                        return res.status(403).json({ message: "Could not insert measured data" });                        
+                    }
                 }
             }
         }
