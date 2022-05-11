@@ -100,12 +100,12 @@ export async function StationHandler(req: Request, res: Response): Promise<Respo
                         data: measuredData
                     }).catch((reason: any) => {
                         console.debug(reason);
-                        // return res.json({ message: "Could not insert measured data" });
+                        return res.status(403).json({ message: "Could not insert measured data" });
                     });
                 }
             }
         }
     }
 
-    return res.json({ message: "stations data was added sucessfully" });
+    return res.status(200).json({ message: "stations data was added sucessfully" });
 }
