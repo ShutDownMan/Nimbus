@@ -3,8 +3,6 @@
 -- PostgreSQL version: 14.0
 -- Project Site: pgmodeler.io
 -- Model Author: Jedson Gabriel
--- object: smartfarmer | type: ROLE --
--- DROP ROLE IF EXISTS smartfarmer;
 
 SET check_function_bodies = false;
 -- ddl-end --

@@ -97,7 +97,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                     };
 
                     try {
-                        prisma.measuredData.create({
+                        await prisma.measuredData.create({
                             data: measuredData
                         });
                     } catch (error: any) {
