@@ -46,7 +46,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
 
                 let measureDataCode = Number("0x" + stationCode + sensorCode + measurementUnitCode);
 
-                // console.debug(measureDataCode)
+                console.debug(measureDataCode)
 
                 for (let measuredValue of measurementUnits) {
                     // measurementUnit.insertMeasuredValue(measuredValue);
