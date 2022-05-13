@@ -50,10 +50,10 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
 
                 for (let measuredValue of measurementUnits) {
                     // measurementUnit.insertMeasuredValue(measuredValue);
-                    let timestamp: string = measuredValue["timestamp"]
+                    let timestamp: Date = new Date(measuredValue["timestamp"])
                     let value: string = measuredValue["value"]
 
-                    console.debug(`inserting value "${value} from ${timestamp}"`);
+                    console.debug(`inserting value "${value}" from ${timestamp}`);
 
                     let station_Sensor_MeasurementUnitData: Prisma.Station_Sensor_MeasurementUnitCreateInput = {
                         code: measureDataCode,
