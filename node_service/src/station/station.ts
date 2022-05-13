@@ -50,7 +50,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
 
                 for (let measuredValue of measurementUnits) {
                     // measurementUnit.insertMeasuredValue(measuredValue);
-                    let timestamp: Date = new Date(measuredValue["timestamp"])
+                    let timestamp: string = String(measuredValue["timestamp"])
                     let value: string = measuredValue["value"]
 
                     console.debug(`inserting value "${value}" from ${timestamp}`);
