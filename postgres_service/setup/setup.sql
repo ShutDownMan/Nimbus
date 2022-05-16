@@ -9,7 +9,7 @@ SET check_function_bodies = false;
 
 -- object: public."Station" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Station" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Station" (
+CREATE TABLE public."Station" (
 	id serial NOT NULL,
 	code integer NOT NULL,
 	description text,
@@ -26,7 +26,7 @@ ALTER TABLE public."Station" OWNER TO smartfarmer;
 
 -- object: public."StationModel" | type: TABLE --
 -- DROP TABLE IF EXISTS public."StationModel" CASCADE;
-CREATE TABLE IF NOT EXISTS public."StationModel" (
+CREATE TABLE public."StationModel" (
 	id serial NOT NULL,
 	name text,
 	upc integer,
@@ -47,7 +47,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Station_Sensor" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Station_Sensor" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Station_Sensor" (
+CREATE TABLE public."Station_Sensor" (
 	id serial NOT NULL,
 	"id_Sensor" integer,
 	"id_Station" integer,
@@ -59,7 +59,7 @@ ALTER TABLE public."Station_Sensor" OWNER TO smartfarmer;
 
 -- object: public."Sensor" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Sensor" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Sensor" (
+CREATE TABLE public."Sensor" (
 	id serial NOT NULL,
 	code integer NOT NULL,
 	serial integer,
@@ -84,7 +84,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."MeasurementUnit" | type: TABLE --
 -- DROP TABLE IF EXISTS public."MeasurementUnit" CASCADE;
-CREATE TABLE IF NOT EXISTS public."MeasurementUnit" (
+CREATE TABLE public."MeasurementUnit" (
 	id serial NOT NULL,
 	code integer NOT NULL,
 	name text,
@@ -98,7 +98,7 @@ ALTER TABLE public."MeasurementUnit" OWNER TO smartfarmer;
 
 -- object: public."Sensor_MeasurementUnit" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Sensor_MeasurementUnit" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Sensor_MeasurementUnit" (
+CREATE TABLE public."Sensor_MeasurementUnit" (
 	id serial NOT NULL,
 	"id_MeasurementUnit" integer,
 	"id_SensorMeasurementConversion" integer,
@@ -134,7 +134,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."SensorMeasurementConversion" | type: TABLE --
 -- DROP TABLE IF EXISTS public."SensorMeasurementConversion" CASCADE;
-CREATE TABLE IF NOT EXISTS public."SensorMeasurementConversion" (
+CREATE TABLE public."SensorMeasurementConversion" (
 	id serial NOT NULL,
 	equation text,
 	description text,
@@ -153,7 +153,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Manufacturer" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Manufacturer" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Manufacturer" (
+CREATE TABLE public."Manufacturer" (
 	id serial NOT NULL,
 	name text,
 	"id_Country" integer NOT NULL,
@@ -172,7 +172,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."MeasuredData" | type: TABLE --
 -- DROP TABLE IF EXISTS public."MeasuredData" CASCADE;
-CREATE TABLE IF NOT EXISTS public."MeasuredData" (
+CREATE TABLE public."MeasuredData" (
 	id serial NOT NULL,
 	"rawValue" double precision NOT NULL,
 	"convertedValue" double precision,
@@ -186,7 +186,7 @@ ALTER TABLE public."MeasuredData" OWNER TO smartfarmer;
 
 -- object: public."TimeSeries" | type: TABLE --
 -- DROP TABLE IF EXISTS public."TimeSeries" CASCADE;
-CREATE TABLE IF NOT EXISTS public."TimeSeries" (
+CREATE TABLE public."TimeSeries" (
 	id serial NOT NULL,
 	"startTS" timestamp with time zone NOT NULL,
 	"endTS" timestamp with time zone NOT NULL,
@@ -204,7 +204,7 @@ ALTER TABLE public."TimeSeries" OWNER TO smartfarmer;
 
 -- object: public."TimeSeriesInterval" | type: TABLE --
 -- DROP TABLE IF EXISTS public."TimeSeriesInterval" CASCADE;
-CREATE TABLE IF NOT EXISTS public."TimeSeriesInterval" (
+CREATE TABLE public."TimeSeriesInterval" (
 	id serial NOT NULL,
 	description text NOT NULL,
 	CONSTRAINT "TimeSeriesInterval_pk" PRIMARY KEY (id)
@@ -215,7 +215,7 @@ ALTER TABLE public."TimeSeriesInterval" OWNER TO smartfarmer;
 
 -- object: public."TimeSeries_MeasureData" | type: TABLE --
 -- DROP TABLE IF EXISTS public."TimeSeries_MeasureData" CASCADE;
-CREATE TABLE IF NOT EXISTS public."TimeSeries_MeasureData" (
+CREATE TABLE public."TimeSeries_MeasureData" (
 	id serial NOT NULL,
 	"id_TimeSeries" integer,
 	"id_MeasuredData" integer,
@@ -250,7 +250,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Country" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Country" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Country" (
+CREATE TABLE public."Country" (
 	id serial NOT NULL,
 	name text NOT NULL,
 	code text NOT NULL,
@@ -270,9 +270,9 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- object: public."Station_Sensor_MeasurementUnit" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Station_Sensor_MeasurementUnit" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Station_Sensor_MeasurementUnit" (
+CREATE TABLE public."Station_Sensor_MeasurementUnit" (
 	id serial NOT NULL,
-	code integer NOT NULL,
+	code int8 NOT NULL,
 	"id_Station" integer,
 	"id_Sensor" integer,
 	"id_MeasurementUnit" integer,
@@ -346,7 +346,7 @@ CREATE TRIGGER "SSM_Update_Pivot"
 
 -- object: public."Farm" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Farm" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Farm" (
+CREATE TABLE public."Farm" (
 	id serial NOT NULL,
 	name text,
 	description text,
@@ -362,7 +362,7 @@ ALTER TABLE public."Farm" OWNER TO smartfarmer;
 
 -- object: public."Farm_Station" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Farm_Station" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Farm_Station" (
+CREATE TABLE public."Farm_Station" (
 	id serial NOT NULL,
 	"id_Farm" integer,
 	"id_Station" integer,
@@ -388,7 +388,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."User" | type: TABLE --
 -- DROP TABLE IF EXISTS public."User" CASCADE;
-CREATE TABLE IF NOT EXISTS public."User" (
+CREATE TABLE public."User" (
 	id serial NOT NULL,
 	name text NOT NULL,
 	"firstName" text NOT NULL,
@@ -408,7 +408,7 @@ ALTER TABLE public."User" OWNER TO smartfarmer;
 
 -- object: public."User_Farm" | type: TABLE --
 -- DROP TABLE IF EXISTS public."User_Farm" CASCADE;
-CREATE TABLE IF NOT EXISTS public."User_Farm" (
+CREATE TABLE public."User_Farm" (
 	id serial NOT NULL,
 	"id_User" integer,
 	"id_Farm" integer,
@@ -434,7 +434,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Email" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Email" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Email" (
+CREATE TABLE public."Email" (
 	id serial NOT NULL,
 	address text NOT NULL,
 	CONSTRAINT "Email_pk" PRIMARY KEY (id)
@@ -452,7 +452,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Phone" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Phone" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Phone" (
+CREATE TABLE public."Phone" (
 	id serial NOT NULL,
 	"DDD" text,
 	"DDI" text,
@@ -467,7 +467,7 @@ ALTER TABLE public."Phone" OWNER TO smartfarmer;
 
 -- object: public."User_Phone" | type: TABLE --
 -- DROP TABLE IF EXISTS public."User_Phone" CASCADE;
-CREATE TABLE IF NOT EXISTS public."User_Phone" (
+CREATE TABLE public."User_Phone" (
 	id serial NOT NULL,
 	"id_User" integer,
 	"id_Phone" integer,
@@ -493,7 +493,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."PhoneType" | type: TABLE --
 -- DROP TABLE IF EXISTS public."PhoneType" CASCADE;
-CREATE TABLE IF NOT EXISTS public."PhoneType" (
+CREATE TABLE public."PhoneType" (
 	id serial NOT NULL,
 	description text NOT NULL,
 	CONSTRAINT "PhoneType_pk" PRIMARY KEY (id)
@@ -511,7 +511,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Address" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Address" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Address" (
+CREATE TABLE public."Address" (
 	id serial NOT NULL,
 	number text,
 	complement text,
@@ -539,7 +539,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: public."Area" | type: TABLE --
 -- DROP TABLE IF EXISTS public."Area" CASCADE;
-CREATE TABLE IF NOT EXISTS public."Area" (
+CREATE TABLE public."Area" (
 	id serial NOT NULL,
 	"id_PublicPlace" integer,
 	CONSTRAINT "Area_pk" PRIMARY KEY (id)
@@ -550,7 +550,7 @@ ALTER TABLE public."Area" OWNER TO smartfarmer;
 
 -- object: public."PostalArea" | type: TABLE --
 -- DROP TABLE IF EXISTS public."PostalArea" CASCADE;
-CREATE TABLE IF NOT EXISTS public."PostalArea" (
+CREATE TABLE public."PostalArea" (
 	id serial NOT NULL,
 	"id_District" integer,
 	"id_Area" integer,
@@ -562,7 +562,7 @@ ALTER TABLE public."PostalArea" OWNER TO smartfarmer;
 
 -- object: public."District" | type: TABLE --
 -- DROP TABLE IF EXISTS public."District" CASCADE;
-CREATE TABLE IF NOT EXISTS public."District" (
+CREATE TABLE public."District" (
 	id serial NOT NULL,
 	"id_City" integer,
 	CONSTRAINT "District_pk" PRIMARY KEY (id)
@@ -573,7 +573,7 @@ ALTER TABLE public."District" OWNER TO smartfarmer;
 
 -- object: public."PublicPlace" | type: TABLE --
 -- DROP TABLE IF EXISTS public."PublicPlace" CASCADE;
-CREATE TABLE IF NOT EXISTS public."PublicPlace" (
+CREATE TABLE public."PublicPlace" (
 	id serial NOT NULL,
 	"id_District" integer,
 	"id_PublicPlaceType" integer,
@@ -585,7 +585,7 @@ ALTER TABLE public."PublicPlace" OWNER TO smartfarmer;
 
 -- object: public."PublicPlaceType" | type: TABLE --
 -- DROP TABLE IF EXISTS public."PublicPlaceType" CASCADE;
-CREATE TABLE IF NOT EXISTS public."PublicPlaceType" (
+CREATE TABLE public."PublicPlaceType" (
 	id serial NOT NULL,
 	name text NOT NULL,
 	CONSTRAINT "PublicPlaceType_pk" PRIMARY KEY (id)
@@ -596,7 +596,7 @@ ALTER TABLE public."PublicPlaceType" OWNER TO smartfarmer;
 
 -- object: public."City" | type: TABLE --
 -- DROP TABLE IF EXISTS public."City" CASCADE;
-CREATE TABLE IF NOT EXISTS public."City" (
+CREATE TABLE public."City" (
 	id serial NOT NULL,
 	name text,
 	"id_State" integer,
@@ -608,7 +608,7 @@ ALTER TABLE public."City" OWNER TO smartfarmer;
 
 -- object: public."State" | type: TABLE --
 -- DROP TABLE IF EXISTS public."State" CASCADE;
-CREATE TABLE IF NOT EXISTS public."State" (
+CREATE TABLE public."State" (
 	id serial NOT NULL,
 	name text,
 	"id_Country" integer,
