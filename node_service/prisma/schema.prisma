@@ -90,14 +90,14 @@ model MeasuredData {
   rawValue                            Float
   convertedValue                      Float?
   timestamp                           DateTime?                      @db.Timestamptz(6)
-  code_Station_Sensor_MeasurementUnit BigInt
+  code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
   Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
   TimeSeries_MeasureData              TimeSeries_MeasureData[]
 }
 
 model MeasurementUnit {
   id                             Int                              @id(map: "MeasurementUnit_pk") @default(autoincrement())
-  code                           BigInt                           @unique(map: "MeasurementUnit_Code_Unique")
+  code                           String                           @unique(map: "MeasurementUnit_Code_Unique") @db.Char(16)
   name                           String?
   description                    String?
   Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
@@ -146,7 +146,7 @@ model PublicPlaceType {
 
 model Sensor {
   id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
-  code                           BigInt                           @unique(map: "Sensor_Code_Unique")
+  code                           String                           @unique(map: "Sensor_Code_Unique") @db.Char(16)
   serial                         Int?
   SKU                            String?
   lifespan                       Unsupported("interval")?
@@ -187,7 +187,7 @@ model State {
 
 model Station {
   id                             Int                              @id(map: "Station_pk") @default(autoincrement())
-  code                           BigInt                           @unique(map: "Station_Code_Unique")
+  code                           String                           @unique(map: "Station_Code_Unique") @db.Char(16)
   description                    String?
   creationTS                     DateTime?                        @default(now()) @db.Timestamptz(6)
   active                         Boolean                          @default(true)
@@ -218,7 +218,7 @@ model Station_Sensor {
 
 model Station_Sensor_MeasurementUnit {
   id                 Int              @id(map: "MeasuredData_Pivot_pk") @default(autoincrement())
-  code               BigInt           @unique(map: "MeasuredData_Pivot_Code_Unique")
+  code               String           @unique(map: "MeasuredData_Pivot_Code_Unique") @db.Char(16)
   id_Station         Int?
   id_Sensor          Int?
   id_MeasurementUnit Int?

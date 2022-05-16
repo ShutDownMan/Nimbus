@@ -15,10 +15,9 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
         let sensors: any = kv_station[1]
 
         /// prepare station for insertion if needed
-        let stationNumericCode: number = Number("0x" + stationCode)
         console.debug(`running through station "${stationCode}"`);
         let stationData: Prisma.StationCreateInput = {
-            code: stationNumericCode
+            code: stationCode
         };
 
         /// for each sensor in the station
@@ -28,10 +27,9 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
             let measurementUnits: any = kv_sensor[1]
 
             /// prepare sensor for insertion if needed
-            let sensorNumericCode: number = Number("0x" + sensorCode)
             console.debug(`running through sensor "${sensorCode}"`);
             let sensorData: Prisma.SensorCreateInput = {
-                code: sensorNumericCode,
+                code: sensorCode,
             };
 
             /// for each measurement unit in the sensor
@@ -40,14 +38,13 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                 let measurementUnitCode: string = kv_measurementUnit[0].padStart(2, "0")
                 let measuredValues: any = kv_measurementUnit[1]
 
-                let measurementUnitNumericCode: number = Number("0x" + measurementUnitCode)
                 console.debug(`running through measurementUnit "${measurementUnitCode}"`);
 
                 let measurementUnitData: Prisma.MeasurementUnitCreateInput = {
-                    code: measurementUnitNumericCode,
+                    code: measurementUnitCode,
                 };
 
-                let measureDataCode = Number("0x" + stationCode + sensorCode + measurementUnitCode);
+                let measureDataCode = stationCode + sensorCode + measurementUnitCode;
 
                 console.debug(measureDataCode)
 
