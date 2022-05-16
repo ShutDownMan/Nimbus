@@ -108,7 +108,7 @@ model Station_Sensor {
 
 model Station_Sensor_MeasurementUnit {
   id                 Int              @id(map: "MeasuredData_Pivot_pk") @default(autoincrement())
-  code               Int              @unique(map: "MeasuredData_Pivot_Code_Unique")
+  code               BigInt           @unique(map: "MeasuredData_Pivot_Code_Unique")
   id_Station         Int?
   id_Sensor          Int?
   id_MeasurementUnit Int?
