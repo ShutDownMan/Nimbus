@@ -25,3 +25,5 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGPORT: 5432
       PORT: 3000
+    volumes:
+      - /var/ota:/var/ota:ro
