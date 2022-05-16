@@ -11,7 +11,7 @@ SET check_function_bodies = false;
 -- DROP TABLE IF EXISTS public."Station" CASCADE;
 CREATE TABLE IF NOT EXISTS public."Station" (
 	id serial NOT NULL,
-	code integer NOT NULL,
+	code int8 NOT NULL,
 	description text,
 	"creationTS" timestamp with time zone DEFAULT now(),
 	active boolean NOT NULL DEFAULT true,
@@ -61,7 +61,7 @@ ALTER TABLE public."Station_Sensor" OWNER TO smartfarmer;
 -- DROP TABLE IF EXISTS public."Sensor" CASCADE;
 CREATE TABLE IF NOT EXISTS public."Sensor" (
 	id serial NOT NULL,
-	code integer NOT NULL,
+	code int8 NOT NULL,
 	serial integer,
 	"SKU" text,
 	lifespan interval,
@@ -86,7 +86,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- DROP TABLE IF EXISTS public."MeasurementUnit" CASCADE;
 CREATE TABLE IF NOT EXISTS public."MeasurementUnit" (
 	id serial NOT NULL,
-	code integer NOT NULL,
+	code int8 NOT NULL,
 	name text,
 	description text,
 	CONSTRAINT "MeasurementUnit_pk" PRIMARY KEY (id),
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS public."MeasuredData" (
 	"rawValue" double precision NOT NULL,
 	"convertedValue" double precision,
 	"timestamp" timestamp with time zone,
-	"code_Station_Sensor_MeasurementUnit" integer NOT NULL,
+	"code_Station_Sensor_MeasurementUnit" int8 NOT NULL,
 	CONSTRAINT "MeasuredData_pk" PRIMARY KEY (id)
 );
 -- ddl-end --

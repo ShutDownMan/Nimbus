@@ -7,12 +7,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Address {
+  id         Int     @id(map: "Address_pk") @default(autoincrement())
+  number     String?
+  complement String?
+  active     Boolean @default(true)
+  id_Area    Int?
+  Area       Area?   @relation(fields: [id_Area], references: [id], map: "Area_fk")
+  Farm       Farm[]
+  User       User[]
+}
+
+model Area {
+  id             Int          @id(map: "Area_pk") @default(autoincrement())
+  id_PublicPlace Int?
+  PublicPlace    PublicPlace? @relation(fields: [id_PublicPlace], references: [id], map: "PublicPlace_fk")
+  Address        Address[]
+  PostalArea     PostalArea[]
+}
+
+model City {
+  id       Int        @id(map: "City_pk") @default(autoincrement())
+  name     String?
+  id_State Int?
+  State    State?     @relation(fields: [id_State], references: [id], map: "State_fk")
+  District District[]
+}
+
 model Country {
   id           Int            @id(map: "country_pk") @default(autoincrement())
   name         String
   code         String         @unique(map: "Country_Code_Unique")
   Manufacturer Manufacturer[]
   State        State[]
+}
+
+model District {
+  id          Int           @id(map: "District_pk") @default(autoincrement())
+  id_City     Int?
+  City        City?         @relation(fields: [id_City], references: [id], map: "City_fk")
+  PostalArea  PostalArea[]
+  PublicPlace PublicPlace[]
+}
+
+model Email {
+  id      Int    @id(map: "Email_pk") @default(autoincrement())
+  address String
+  User    User[]
+}
+
+model Farm {
+  id            Int            @id(map: "Farm_pk") @default(autoincrement())
+  name          String?
+  description   String?
+  createdAt     DateTime?      @default(now()) @db.Timestamptz(6)
+  active        Boolean?
+  deactivatedAt DateTime?      @db.Timestamptz(6)
+  id_Address    Int?
+  Address       Address?       @relation(fields: [id_Address], references: [id], map: "Address_fk")
+  Farm_Station  Farm_Station[]
+  User_Farm     User_Farm[]
+}
+
+model Farm_Station {
+  id         Int      @id(map: "Farm_Station_pk") @default(autoincrement())
+  id_Farm    Int?
+  id_Station Int?
+  Farm       Farm?    @relation(fields: [id_Farm], references: [id], map: "Farm_fk")
+  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
 }
 
 model Manufacturer {
@@ -28,23 +90,63 @@ model MeasuredData {
   rawValue                            Float
   convertedValue                      Float?
   timestamp                           DateTime?                      @db.Timestamptz(6)
-  code_Station_Sensor_MeasurementUnit Int
+  code_Station_Sensor_MeasurementUnit BigInt
   Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
   TimeSeries_MeasureData              TimeSeries_MeasureData[]
 }
 
 model MeasurementUnit {
   id                             Int                              @id(map: "MeasurementUnit_pk") @default(autoincrement())
-  code                           Int                              @unique(map: "MeasurementUnit_Code_Unique")
+  code                           BigInt                           @unique(map: "MeasurementUnit_Code_Unique")
   name                           String?
   description                    String?
   Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
   Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
 }
 
+model Phone {
+  id           Int          @id(map: "Phone_pk") @default(autoincrement())
+  DDD          String?
+  DDI          String?
+  number       String?
+  active       Boolean      @default(true)
+  id_PhoneType Int?
+  PhoneType    PhoneType?   @relation(fields: [id_PhoneType], references: [id], map: "PhoneType_fk")
+  User_Phone   User_Phone[]
+}
+
+model PhoneType {
+  id          Int     @id(map: "PhoneType_pk") @default(autoincrement())
+  description String
+  Phone       Phone[]
+}
+
+model PostalArea {
+  id          Int       @id(map: "PostalArea_pk") @default(autoincrement())
+  id_District Int?
+  id_Area     Int?
+  Area        Area?     @relation(fields: [id_Area], references: [id], map: "Area_fk")
+  District    District? @relation(fields: [id_District], references: [id], map: "District_fk")
+}
+
+model PublicPlace {
+  id                 Int              @id(map: "PublicPlace_pk") @default(autoincrement())
+  id_District        Int?
+  id_PublicPlaceType Int?
+  District           District?        @relation(fields: [id_District], references: [id], map: "District_fk")
+  PublicPlaceType    PublicPlaceType? @relation(fields: [id_PublicPlaceType], references: [id], map: "PublicPlaceType_fk")
+  Area               Area[]
+}
+
+model PublicPlaceType {
+  id          Int           @id(map: "PublicPlaceType_pk") @default(autoincrement())
+  name        String
+  PublicPlace PublicPlace[]
+}
+
 model Sensor {
   id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
-  code                           Int                              @unique(map: "Sensor_Code_Unique")
+  code                           BigInt                           @unique(map: "Sensor_Code_Unique")
   serial                         Int?
   SKU                            String?
   lifespan                       Unsupported("interval")?
@@ -75,9 +177,17 @@ model Sensor_MeasurementUnit {
   SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], map: "SensorMeasurementConversion_fk")
 }
 
+model State {
+  id         Int      @id(map: "State_pk") @default(autoincrement())
+  name       String?
+  id_Country Int?
+  Country    Country? @relation(fields: [id_Country], references: [id], map: "Country_fk")
+  City       City[]
+}
+
 model Station {
   id                             Int                              @id(map: "Station_pk") @default(autoincrement())
-  code                           Int                              @unique(map: "Station_Code_Unique")
+  code                           BigInt                           @unique(map: "Station_Code_Unique")
   description                    String?
   creationTS                     DateTime?                        @default(now()) @db.Timestamptz(6)
   active                         Boolean                          @default(true)
@@ -144,116 +254,6 @@ model TimeSeries_MeasureData {
   id_MeasuredData Int?
   MeasuredData    MeasuredData? @relation(fields: [id_MeasuredData], references: [id], map: "MeasuredData_fk")
   TimeSeries      TimeSeries?   @relation(fields: [id_TimeSeries], references: [id], map: "TimeSeries_fk")
-}
-
-model Address {
-  id         Int     @id(map: "Address_pk") @default(autoincrement())
-  number     String?
-  complement String?
-  active     Boolean @default(true)
-  id_Area    Int?
-  Area       Area?   @relation(fields: [id_Area], references: [id], map: "Area_fk")
-  Farm       Farm[]
-  User       User[]
-}
-
-model Area {
-  id             Int          @id(map: "Area_pk") @default(autoincrement())
-  id_PublicPlace Int?
-  PublicPlace    PublicPlace? @relation(fields: [id_PublicPlace], references: [id], map: "PublicPlace_fk")
-  Address        Address[]
-  PostalArea     PostalArea[]
-}
-
-model City {
-  id       Int        @id(map: "City_pk") @default(autoincrement())
-  name     String?
-  id_State Int?
-  State    State?     @relation(fields: [id_State], references: [id], map: "State_fk")
-  District District[]
-}
-
-model District {
-  id          Int           @id(map: "District_pk") @default(autoincrement())
-  id_City     Int?
-  City        City?         @relation(fields: [id_City], references: [id], map: "City_fk")
-  PostalArea  PostalArea[]
-  PublicPlace PublicPlace[]
-}
-
-model Email {
-  id      Int    @id(map: "Email_pk") @default(autoincrement())
-  address String
-  User    User[]
-}
-
-model Farm {
-  id            Int            @id(map: "Farm_pk") @default(autoincrement())
-  name          String?
-  description   String?
-  createdAt     DateTime?      @default(now()) @db.Timestamptz(6)
-  active        Boolean?
-  deactivatedAt DateTime?      @db.Timestamptz(6)
-  id_Address    Int?
-  Address       Address?       @relation(fields: [id_Address], references: [id], map: "Address_fk")
-  Farm_Station  Farm_Station[]
-  User_Farm     User_Farm[]
-}
-
-model Farm_Station {
-  id         Int      @id(map: "Farm_Station_pk") @default(autoincrement())
-  id_Farm    Int?
-  id_Station Int?
-  Farm       Farm?    @relation(fields: [id_Farm], references: [id], map: "Farm_fk")
-  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
-}
-
-model Phone {
-  id           Int          @id(map: "Phone_pk") @default(autoincrement())
-  DDD          String?
-  DDI          String?
-  number       String?
-  active       Boolean      @default(true)
-  id_PhoneType Int?
-  PhoneType    PhoneType?   @relation(fields: [id_PhoneType], references: [id], map: "PhoneType_fk")
-  User_Phone   User_Phone[]
-}
-
-model PhoneType {
-  id          Int     @id(map: "PhoneType_pk") @default(autoincrement())
-  description String
-  Phone       Phone[]
-}
-
-model PostalArea {
-  id          Int       @id(map: "PostalArea_pk") @default(autoincrement())
-  id_District Int?
-  id_Area     Int?
-  Area        Area?     @relation(fields: [id_Area], references: [id], map: "Area_fk")
-  District    District? @relation(fields: [id_District], references: [id], map: "District_fk")
-}
-
-model PublicPlace {
-  id                 Int              @id(map: "PublicPlace_pk") @default(autoincrement())
-  id_District        Int?
-  id_PublicPlaceType Int?
-  District           District?        @relation(fields: [id_District], references: [id], map: "District_fk")
-  PublicPlaceType    PublicPlaceType? @relation(fields: [id_PublicPlaceType], references: [id], map: "PublicPlaceType_fk")
-  Area               Area[]
-}
-
-model PublicPlaceType {
-  id          Int           @id(map: "PublicPlaceType_pk") @default(autoincrement())
-  name        String
-  PublicPlace PublicPlace[]
-}
-
-model State {
-  id         Int      @id(map: "State_pk") @default(autoincrement())
-  name       String?
-  id_Country Int?
-  Country    Country? @relation(fields: [id_Country], references: [id], map: "Country_fk")
-  City       City[]
 }
 
 model User {

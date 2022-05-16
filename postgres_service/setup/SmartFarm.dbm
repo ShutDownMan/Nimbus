@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1294,452" last-zoom="0.7" max-obj-count="39"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="2158,1111" last-zoom="0.7" max-obj-count="39"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -32,7 +32,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="serial" length="0"/>
 	</column>
 	<column name="code" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="int8" length="0"/>
 	</column>
 	<column name="description">
 		<type name="text" length="0"/>
@@ -122,7 +122,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="serial" length="0"/>
 	</column>
 	<column name="code" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="int8" length="0"/>
 		<comment><![CDATA[The self-reporting code given by the stations sensors]]></comment>
 	</column>
 	<column name="serial">
@@ -166,7 +166,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="serial" length="0"/>
 	</column>
 	<column name="code" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="int8" length="0"/>
 	</column>
 	<column name="name">
 		<type name="text" length="0"/>
@@ -308,7 +308,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="timestamp with time zone" length="0" with-timezone="true"/>
 	</column>
 	<column name="code_Station_Sensor_MeasurementUnit" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="int8" length="0"/>
 	</column>
 	<constraint name="MeasuredData_pk" type="pk-constr" table="public.&quot;MeasuredData&quot;">
 		<columns names="id" ref-type="src-columns"/>
