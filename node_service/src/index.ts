@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import { Pool } from 'pg';
 import { StationHandler } from './station/station';
 import asyncHandler from "express-async-handler"
+import path from "path";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use('/ota', express.static('/var/ota'))
 
 const nimbusDB = new Pool({
 	idleTimeoutMillis: 30000,
