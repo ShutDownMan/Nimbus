@@ -11,6 +11,13 @@ services:
     volumes:
       - ./postgres_service/postgresql:/var/lib/postgresql
       - ./postgres_service/setup:/docker-entrypoint-initdb.d
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
+        max-file: "3"
+        labels: "production_status"
+        env: "os"
   node:
     build:
       context: ./node_service/
@@ -28,3 +35,10 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
     volumes:
       - /var/ota:/var/ota:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
+        max-file: "3"
+        labels: "production_status"
+        env: "os"
