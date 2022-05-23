@@ -25,5 +25,6 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGPORT: 5432
       PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
     volumes:
       - /var/ota:/var/ota:ro
