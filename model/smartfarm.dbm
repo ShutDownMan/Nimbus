@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" last-position="0,13" last-zoom="1" max-obj-count="40"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<role name="smartfarmer"
+ superuser="true"
+ createdb="true"
+ replication="true"
+ createrole="true"
+ inherit="true"
+ login="true"
+ bypassrls="true"
+ encrypted="true"
+ password="********"
+ sql-disabled="true">
+</role>
+
+<database name="SmartFarm" encoding="UTF8" lc-collate="en_US.utf8" lc-ctype="en_US.utf8" is-template="false" allow-conns="true">
+	<role name="smartfarmer"/>
+	<tablespace name="pg_default"/>
+</database>
+
+<schema name="public" layers="0" rect-visible="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<sequence name="Station_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Station" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="60"/>
+	<column name="id" not-null="true" sequence="public.&quot;Station_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="character" length="16"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="creationTS" default-value="now()">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="deactivationTS">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="id_StationModel">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Station_pk" type="pk-constr" table="public.&quot;Station&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="Station_Code_Unique" type="uq-constr" table="public.&quot;Station&quot;">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="StationModel_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="StationModel" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="480" y="60"/>
+	<column name="id" not-null="true" sequence="public.&quot;StationModel_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="upc">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="serial">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="StationModel_pk" type="pk-constr" table="public.&quot;StationModel&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Station_Sensor_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Station_Sensor" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="820" y="60"/>
+	<column name="id" not-null="true" sequence="public.&quot;Station_Sensor_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Sensor">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Station">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="StationSensor_pk" type="pk-constr" table="public.&quot;Station_Sensor&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Sensor_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Sensor" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1160" y="60"/>
+	<column name="id" not-null="true" sequence="public.&quot;Sensor_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="character" length="16"/>
+		<comment><![CDATA[The self-reporting code given by the stations sensors]]></comment>
+	</column>
+	<column name="serial">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="SKU">
+		<type name="text" length="0"/>
+	</column>
+	<column name="lifespan">
+		<type name="interval" length="0"/>
+	</column>
+	<column name="id_Manufacturer">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Sensor_pk" type="pk-constr" table="public.&quot;Sensor&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="Sensor_Code_Unique" type="uq-constr" table="public.&quot;Sensor&quot;">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="MeasurementUnit_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1540" y="60"/>
+	<column name="id" not-null="true" sequence="public.&quot;MeasurementUnit_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="character" length="16"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="MeasurementUnit_pk" type="pk-constr" table="public.&quot;MeasurementUnit&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="MeasurementUnit_Code_Unique" type="uq-constr" table="public.&quot;MeasurementUnit&quot;">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Sensor_MeasurementUnit_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Sensor_MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="420"/>
+	<column name="id" not-null="true" sequence="public.&quot;Sensor_MeasurementUnit_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_MeasurementUnit">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_SensorMeasurementConversion">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="precision">
+		<type name="double precision" length="0"/>
+		<comment><![CDATA[Precision of the sensor measurement for this unit]]></comment>
+	</column>
+	<column name="minValue">
+		<type name="double precision" length="0"/>
+		<comment><![CDATA[Minimum value the sensor can report]]></comment>
+	</column>
+	<column name="maxValue">
+		<type name="double precision" length="0"/>
+		<comment><![CDATA[Maximum value the sensor can report]]></comment>
+	</column>
+	<column name="id_Sensor">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="MeasurementUnit_Sensor_pk" type="pk-constr" table="public.&quot;Sensor_MeasurementUnit&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="SensorMeasurementConversion_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="SensorMeasurementConversion" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="520" y="420"/>
+	<column name="id" not-null="true" sequence="public.&quot;SensorMeasurementConversion_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="equation">
+		<type name="text" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="SensorMeasurementConversion_pk" type="pk-constr" table="public.&quot;SensorMeasurementConversion&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Manufacturer_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Manufacturer" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="980" y="420"/>
+	<column name="id" not-null="true" sequence="public.&quot;Manufacturer_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="id_Country" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Manufacturer_pk" type="pk-constr" table="public.&quot;Manufacturer&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="MeasuredData_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="MeasuredData" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1320" y="420"/>
+	<column name="id" not-null="true" sequence="public.&quot;MeasuredData_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="rawValue" not-null="true">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="convertedValue">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="timestamp">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="code_Station_Sensor_MeasurementUnit" not-null="true">
+		<type name="character" length="16"/>
+	</column>
+	<constraint name="MeasuredData_pk" type="pk-constr" table="public.&quot;MeasuredData&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="TimeSeries_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="TimeSeries" layers="0" collapse-mode="2" max-obj-count="10" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1880" y="420"/>
+	<column name="id" not-null="true" sequence="public.&quot;TimeSeries_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="startTS" not-null="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="endTS" not-null="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="count">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="sum">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="average">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="min">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="max">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="id_TimeSeriesInterval">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="TimeSeries_pk" type="pk-constr" table="public.&quot;TimeSeries&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="TimeSeriesInterval_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="TimeSeriesInterval" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="800"/>
+	<column name="id" not-null="true" sequence="public.&quot;TimeSeriesInterval_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="description" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="TimeSeriesInterval_pk" type="pk-constr" table="public.&quot;TimeSeriesInterval&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="TimeSeries_MeasureData_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="TimeSeries_MeasureData" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<comment><![CDATA[This table stores the data utilized to calculate the time series]]></comment>
+	<position x="420" y="800"/>
+	<column name="id" not-null="true" sequence="public.&quot;TimeSeries_MeasureData_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_TimeSeries">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_MeasuredData">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="TimeSeries_MeasureData_pk" type="pk-constr" table="public.&quot;TimeSeries_MeasureData&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Country_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Country" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="840" y="800"/>
+	<column name="id" not-null="true" sequence="public.&quot;Country_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="country_pk" type="pk-constr" table="public.&quot;Country&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="Country_Code_Unique" type="uq-constr" table="public.&quot;Country&quot;">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Station_Sensor_MeasurementUnit_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Station_Sensor_MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1220" y="800"/>
+	<column name="id" not-null="true" sequence="public.&quot;Station_Sensor_MeasurementUnit_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="character" length="16"/>
+	</column>
+	<column name="id_Station">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Sensor">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_MeasurementUnit">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="MeasuredData_Pivot_pk" type="pk-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="MeasuredData_Pivot_Code_Unique" type="uq-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<function name="Update_SSM_Pivots"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL UNSAFE"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<language name="plpgsql"/>
+	<return-type>
+	<type name="trigger" length="0"/>
+	</return-type>
+	<definition><![CDATA[	BEGIN
+
+		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor");
+
+		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit");
+
+		RETURN new;
+	END]]></definition>
+</function>
+
+<trigger name="SSM_Update_Pivot" firing-type="AFTER" per-line="true" constraint="false"
+	 ins-event="true" del-event="false" upd-event="false" trunc-event="false"
+	 table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+		<function signature="public.&quot;Update_SSM_Pivots&quot;()"/>
+</trigger>
+
+<sequence name="Farm_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Farm" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1680" y="800"/>
+	<column name="id" not-null="true" sequence="public.&quot;Farm_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="createdAt" default-value="now()">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="active">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="deactivatedAt">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="id_Address">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Farm_pk" type="pk-constr" table="public.&quot;Farm&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Farm_Station_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Farm_Station" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="1200"/>
+	<column name="id" not-null="true" sequence="public.&quot;Farm_Station_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Farm">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Station">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Farm_Station_pk" type="pk-constr" table="public.&quot;Farm_Station&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="User_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="User" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="400" y="1200"/>
+	<column name="id" not-null="true" sequence="public.&quot;User_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="firstName" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="lastName" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="nickName">
+		<type name="text" length="0"/>
+	</column>
+	<column name="passwordHash" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="createdAt" default-value="now()">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="deactivatedAt">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="id_Email">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Address">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="User_pk" type="pk-constr" table="public.&quot;User&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="User_Farm_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="User_Farm" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="800" y="1200"/>
+	<column name="id" not-null="true" sequence="public.&quot;User_Farm_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_User">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Farm">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="User_Farm_pk" type="pk-constr" table="public.&quot;User_Farm&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Email_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Email" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1140" y="1200"/>
+	<column name="id" not-null="true" sequence="public.&quot;Email_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="address" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="Email_pk" type="pk-constr" table="public.&quot;Email&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Phone_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Phone" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1420" y="1200"/>
+	<column name="id" not-null="true" sequence="public.&quot;Phone_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="DDD">
+		<type name="text" length="0"/>
+	</column>
+	<column name="DDI">
+		<type name="text" length="0"/>
+	</column>
+	<column name="number">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="id_PhoneType">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Phone_pk" type="pk-constr" table="public.&quot;Phone&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="User_Phone_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="User_Phone" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="1660"/>
+	<column name="id" not-null="true" sequence="public.&quot;User_Phone_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_User">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Phone">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="User_Phone_pk" type="pk-constr" table="public.&quot;User_Phone&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="PhoneType_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="PhoneType" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="380" y="1660"/>
+	<column name="id" not-null="true" sequence="public.&quot;PhoneType_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="description" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="PhoneType_pk" type="pk-constr" table="public.&quot;PhoneType&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Address_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Address" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="720" y="1660"/>
+	<column name="id" not-null="true" sequence="public.&quot;Address_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number">
+		<type name="text" length="0"/>
+	</column>
+	<column name="complement">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="id_Area">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Address_pk" type="pk-constr" table="public.&quot;Address&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="Area_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="Area" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1020" y="1660"/>
+	<column name="id" not-null="true" sequence="public.&quot;Area_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_PublicPlace">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="Area_pk" type="pk-constr" table="public.&quot;Area&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="PostalArea_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="PostalArea" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1360" y="1660"/>
+	<column name="id" not-null="true" sequence="public.&quot;PostalArea_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_District">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_Area">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="PostalArea_pk" type="pk-constr" table="public.&quot;PostalArea&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="District_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="District" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="60" y="1960"/>
+	<column name="id" not-null="true" sequence="public.&quot;District_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_City">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="District_pk" type="pk-constr" table="public.&quot;District&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="PublicPlace_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="PublicPlace" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="360" y="1960"/>
+	<column name="id" not-null="true" sequence="public.&quot;PublicPlace_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_District">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="id_PublicPlaceType">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="PublicPlace_pk" type="pk-constr" table="public.&quot;PublicPlace&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="PublicPlaceType_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="PublicPlaceType" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="720" y="1960"/>
+	<column name="id" not-null="true" sequence="public.&quot;PublicPlaceType_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="PublicPlaceType_pk" type="pk-constr" table="public.&quot;PublicPlaceType&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="City_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="City" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1080" y="1960"/>
+	<column name="id" not-null="true" sequence="public.&quot;City_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="id_State">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="City_pk" type="pk-constr" table="public.&quot;City&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="State_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+</sequence>
+
+<table name="State" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="1360" y="1960"/>
+	<column name="id" not-null="true" sequence="public.&quot;State_id_seq&quot;">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="id_Country">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="State_pk" type="pk-constr" table="public.&quot;State&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="StationModel_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;StationModel&quot;" table="public.&quot;Station&quot;">
+	<columns names="id_StationModel" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Sensor_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Sensor&quot;" table="public.&quot;Station_Sensor&quot;">
+	<columns names="id_Sensor" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Station_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Station&quot;" table="public.&quot;Station_Sensor&quot;">
+	<columns names="id_Station" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Manufacturer_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Manufacturer&quot;" table="public.&quot;Sensor&quot;">
+	<columns names="id_Manufacturer" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;MeasurementUnit&quot;" table="public.&quot;Sensor_MeasurementUnit&quot;">
+	<columns names="id_MeasurementUnit" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Sensor_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Sensor&quot;" table="public.&quot;Sensor_MeasurementUnit&quot;">
+	<columns names="id_Sensor" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="SensorMeasurementConversion_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;SensorMeasurementConversion&quot;" table="public.&quot;Sensor_MeasurementUnit&quot;">
+	<columns names="id_SensorMeasurementConversion" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Country_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="RESTRICT" ref-table="public.&quot;Country&quot;" table="public.&quot;Manufacturer&quot;">
+	<columns names="id_Country" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Station_Sensor_MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;MeasuredData&quot;">
+	<columns names="code_Station_Sensor_MeasurementUnit" ref-type="src-columns"/>
+	<columns names="code" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="TimeSeriesInterval_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;TimeSeriesInterval&quot;" table="public.&quot;TimeSeries&quot;">
+	<columns names="id_TimeSeriesInterval" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="TimeSeries_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;TimeSeries&quot;" table="public.&quot;TimeSeries_MeasureData&quot;">
+	<columns names="id_TimeSeries" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="MeasuredData_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;MeasuredData&quot;" table="public.&quot;TimeSeries_MeasureData&quot;">
+	<columns names="id_MeasuredData" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Station_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Station&quot;" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+	<columns names="id_Station" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;MeasurementUnit&quot;" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+	<columns names="id_MeasurementUnit" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Sensor_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Sensor&quot;" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+	<columns names="id_Sensor" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Address_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Address&quot;" table="public.&quot;Farm&quot;">
+	<columns names="id_Address" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Farm_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Farm&quot;" table="public.&quot;Farm_Station&quot;">
+	<columns names="id_Farm" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Station_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Station&quot;" table="public.&quot;Farm_Station&quot;">
+	<columns names="id_Station" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Email_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Email&quot;" table="public.&quot;User&quot;">
+	<columns names="id_Email" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Address_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Address&quot;" table="public.&quot;User&quot;">
+	<columns names="id_Address" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="User_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;User&quot;" table="public.&quot;User_Farm&quot;">
+	<columns names="id_User" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Farm_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Farm&quot;" table="public.&quot;User_Farm&quot;">
+	<columns names="id_Farm" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="PhoneType_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;PhoneType&quot;" table="public.&quot;Phone&quot;">
+	<columns names="id_PhoneType" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="User_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;User&quot;" table="public.&quot;User_Phone&quot;">
+	<columns names="id_User" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Phone_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Phone&quot;" table="public.&quot;User_Phone&quot;">
+	<columns names="id_Phone" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Area_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Area&quot;" table="public.&quot;Address&quot;">
+	<columns names="id_Area" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="PublicPlace_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;PublicPlace&quot;" table="public.&quot;Area&quot;">
+	<columns names="id_PublicPlace" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="District_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;District&quot;" table="public.&quot;PostalArea&quot;">
+	<columns names="id_District" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Area_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Area&quot;" table="public.&quot;PostalArea&quot;">
+	<columns names="id_Area" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="City_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;City&quot;" table="public.&quot;District&quot;">
+	<columns names="id_City" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="District_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;District&quot;" table="public.&quot;PublicPlace&quot;">
+	<columns names="id_District" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="PublicPlaceType_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;PublicPlaceType&quot;" table="public.&quot;PublicPlace&quot;">
+	<columns names="id_PublicPlaceType" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="State_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;State&quot;" table="public.&quot;City&quot;">
+	<columns names="id_State" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="Country_fk" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="CASCADE" del-action="SET NULL" ref-table="public.&quot;Country&quot;" table="public.&quot;State&quot;">
+	<columns names="id_Country" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="&quot;rel_Station_StationModel&quot;" type="relfk" layers="0"
+	 custom-color="#96b200"
+	 src-table="public.&quot;Station&quot;"
+	 dst-table="public.&quot;StationModel&quot;" reference-fk="StationModel_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Station_Sensor_Sensor&quot;" type="relfk" layers="0"
+	 custom-color="#bef4b8"
+	 src-table="public.&quot;Station_Sensor&quot;"
+	 dst-table="public.&quot;Sensor&quot;" reference-fk="Sensor_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Station_Sensor_Station&quot;" type="relfk" layers="0"
+	 custom-color="#e19951"
+	 src-table="public.&quot;Station_Sensor&quot;"
+	 dst-table="public.&quot;Station&quot;" reference-fk="Station_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Sensor_Manufacturer&quot;" type="relfk" layers="0"
+	 custom-color="#73e1c3"
+	 src-table="public.&quot;Sensor&quot;"
+	 dst-table="public.&quot;Manufacturer&quot;" reference-fk="Manufacturer_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Sensor_MeasurementUnit_MeasurementUnit&quot;" type="relfk" layers="0"
+	 custom-color="#ceedbd"
+	 src-table="public.&quot;Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;MeasurementUnit&quot;" reference-fk="MeasurementUnit_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Sensor_MeasurementUnit_Sensor&quot;" type="relfk" layers="0"
+	 custom-color="#b56eb5"
+	 src-table="public.&quot;Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;Sensor&quot;" reference-fk="Sensor_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Sensor_MeasurementUnit_SensorMeasurementConversion&quot;" type="relfk" layers="0"
+	 custom-color="#f2d172"
+	 src-table="public.&quot;Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;SensorMeasurementConversion&quot;" reference-fk="SensorMeasurementConversion_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Manufacturer_Country&quot;" type="relfk" layers="0"
+	 custom-color="#e2c476"
+	 src-table="public.&quot;Manufacturer&quot;"
+	 dst-table="public.&quot;Country&quot;" reference-fk="Country_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="&quot;rel_MeasuredData_Station_Sensor_MeasurementUnit&quot;" type="relfk" layers="0"
+	 custom-color="#6ed47a"
+	 src-table="public.&quot;MeasuredData&quot;"
+	 dst-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" reference-fk="Station_Sensor_MeasurementUnit_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="&quot;rel_TimeSeries_TimeSeriesInterval&quot;" type="relfk" layers="0"
+	 custom-color="#5324b0"
+	 src-table="public.&quot;TimeSeries&quot;"
+	 dst-table="public.&quot;TimeSeriesInterval&quot;" reference-fk="TimeSeriesInterval_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_TimeSeries_MeasureData_TimeSeries&quot;" type="relfk" layers="0"
+	 custom-color="#59d014"
+	 src-table="public.&quot;TimeSeries_MeasureData&quot;"
+	 dst-table="public.&quot;TimeSeries&quot;" reference-fk="TimeSeries_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_TimeSeries_MeasureData_MeasuredData&quot;" type="relfk" layers="0"
+	 custom-color="#7e49b5"
+	 src-table="public.&quot;TimeSeries_MeasureData&quot;"
+	 dst-table="public.&quot;MeasuredData&quot;" reference-fk="MeasuredData_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Station_Sensor_MeasurementUnit_Station&quot;" type="relfk" layers="0"
+	 custom-color="#aacec8"
+	 src-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;Station&quot;" reference-fk="Station_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Station_Sensor_MeasurementUnit_MeasurementUnit&quot;" type="relfk" layers="0"
+	 custom-color="#6143c2"
+	 src-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;MeasurementUnit&quot;" reference-fk="MeasurementUnit_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Station_Sensor_MeasurementUnit_Sensor&quot;" type="relfk" layers="0"
+	 custom-color="#4bb37e"
+	 src-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
+	 dst-table="public.&quot;Sensor&quot;" reference-fk="Sensor_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Farm_Address&quot;" type="relfk" layers="0"
+	 custom-color="#ae4c1b"
+	 src-table="public.&quot;Farm&quot;"
+	 dst-table="public.&quot;Address&quot;" reference-fk="Address_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Farm_Station_Farm&quot;" type="relfk" layers="0"
+	 custom-color="#7e8a0d"
+	 src-table="public.&quot;Farm_Station&quot;"
+	 dst-table="public.&quot;Farm&quot;" reference-fk="Farm_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Farm_Station_Station&quot;" type="relfk" layers="0"
+	 custom-color="#d2f6ba"
+	 src-table="public.&quot;Farm_Station&quot;"
+	 dst-table="public.&quot;Station&quot;" reference-fk="Station_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Email&quot;" type="relfk" layers="0"
+	 custom-color="#8dc963"
+	 src-table="public.&quot;User&quot;"
+	 dst-table="public.&quot;Email&quot;" reference-fk="Email_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Address&quot;" type="relfk" layers="0"
+	 custom-color="#f11eec"
+	 src-table="public.&quot;User&quot;"
+	 dst-table="public.&quot;Address&quot;" reference-fk="Address_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Farm_User&quot;" type="relfk" layers="0"
+	 custom-color="#39973f"
+	 src-table="public.&quot;User_Farm&quot;"
+	 dst-table="public.&quot;User&quot;" reference-fk="User_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Farm_Farm&quot;" type="relfk" layers="0"
+	 custom-color="#a16713"
+	 src-table="public.&quot;User_Farm&quot;"
+	 dst-table="public.&quot;Farm&quot;" reference-fk="Farm_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Phone_PhoneType&quot;" type="relfk" layers="0"
+	 custom-color="#f2f59d"
+	 src-table="public.&quot;Phone&quot;"
+	 dst-table="public.&quot;PhoneType&quot;" reference-fk="PhoneType_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Phone_User&quot;" type="relfk" layers="0"
+	 custom-color="#8c844f"
+	 src-table="public.&quot;User_Phone&quot;"
+	 dst-table="public.&quot;User&quot;" reference-fk="User_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_User_Phone_Phone&quot;" type="relfk" layers="0"
+	 custom-color="#dbb1a1"
+	 src-table="public.&quot;User_Phone&quot;"
+	 dst-table="public.&quot;Phone&quot;" reference-fk="Phone_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Address_Area&quot;" type="relfk" layers="0"
+	 custom-color="#1b3e4f"
+	 src-table="public.&quot;Address&quot;"
+	 dst-table="public.&quot;Area&quot;" reference-fk="Area_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Area_PublicPlace&quot;" type="relfk" layers="0"
+	 custom-color="#ea6ca6"
+	 src-table="public.&quot;Area&quot;"
+	 dst-table="public.&quot;PublicPlace&quot;" reference-fk="PublicPlace_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_PostalArea_District&quot;" type="relfk" layers="0"
+	 custom-color="#bbd3b6"
+	 src-table="public.&quot;PostalArea&quot;"
+	 dst-table="public.&quot;District&quot;" reference-fk="District_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_PostalArea_Area&quot;" type="relfk" layers="0"
+	 custom-color="#fdb036"
+	 src-table="public.&quot;PostalArea&quot;"
+	 dst-table="public.&quot;Area&quot;" reference-fk="Area_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_District_City&quot;" type="relfk" layers="0"
+	 custom-color="#de3a1d"
+	 src-table="public.&quot;District&quot;"
+	 dst-table="public.&quot;City&quot;" reference-fk="City_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_PublicPlace_District&quot;" type="relfk" layers="0"
+	 custom-color="#ab49a7"
+	 src-table="public.&quot;PublicPlace&quot;"
+	 dst-table="public.&quot;District&quot;" reference-fk="District_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_PublicPlace_PublicPlaceType&quot;" type="relfk" layers="0"
+	 custom-color="#ed3be1"
+	 src-table="public.&quot;PublicPlace&quot;"
+	 dst-table="public.&quot;PublicPlaceType&quot;" reference-fk="PublicPlaceType_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_City_State&quot;" type="relfk" layers="0"
+	 custom-color="#e09360"
+	 src-table="public.&quot;City&quot;"
+	 dst-table="public.&quot;State&quot;" reference-fk="State_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_State_Country&quot;" type="relfk" layers="0"
+	 custom-color="#1c99da"
+	 src-table="public.&quot;State&quot;"
+	 dst-table="public.&quot;Country&quot;" reference-fk="Country_fk"
+	 src-required="false" dst-required="false"/>
+
+<permission>
+	<object name="public" type="schema"/>
+	<roles names="smartfarmer"/>
+	<privileges create="true" usage="true"/>
+</permission>
+<permission>
+	<object name="public" type="schema"/>
+	<privileges create="true" usage="true"/>
+</permission>
+</dbmodel>

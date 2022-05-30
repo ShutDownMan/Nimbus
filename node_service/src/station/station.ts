@@ -1,5 +1,5 @@
+import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
-import { Prisma } from '@prisma/client'
 import PrismaGlobal from "../prisma";
 
 export async function StationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
@@ -103,7 +103,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                         });
                     } catch (error: any) {
                         console.debug(error);
-                        return res.status(403).json({ message: "Could not insert measured data" });                        
+                        return res.status(403).json({ message: "Could not insert measured data" });
                     }
                 }
             }
