@@ -14,8 +14,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: 100m
-        max-file: "3"
+        max-size: 10m
+        max-file: "1"
         labels: "production_status"
         env: "os"
   node:
@@ -38,7 +38,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: 100m
-        max-file: "3"
+        max-size: 10m
+        max-file: "1"
         labels: "production_status"
         env: "os"
