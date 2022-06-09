@@ -2,6 +2,8 @@ import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
 import PrismaGlobal from "../prisma";
 
+
+
 export async function StationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     console.debug("Handling Stations");
     console.debug(req.body);
