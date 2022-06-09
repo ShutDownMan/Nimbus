@@ -18,6 +18,7 @@ services:
         max-file: "1"
         labels: "production_status"
         env: "os"
+
   node:
     build:
       context: ./node_service/
@@ -35,6 +36,57 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
     volumes:
       - /var/ota:/var/ota:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "1"
+        labels: "production_status"
+        env: "os"
+
+  grafana:
+    network_mode: 'host'
+    ports:
+      - 3000:3000
+    image: grafana/grafana:latest
+    container_name: monitoring_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+    volumes:
+      - ./grafana_service/data/grafana:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "1"
+        labels: "production_status"
+        env: "os"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus_service/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "1"
+        labels: "production_status"
+        env: "os"
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    ports:
+      - 9187:9187
+    environment:
+      DATA_SOURCE_NAME: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+    links:
+      - postgres
+      - prometheus
     logging:
       driver: "json-file"
       options:
