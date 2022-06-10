@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="2873,1772" last-zoom="0.85" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="0,225" last-zoom="0.7" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -11,20 +11,31 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 layer-rect-colors="#b4b4b4"
 	 show-layer-names="false" show-layer-rects="false">
 <role name="smartfarmer"
+ superuser="true"
  createdb="true"
+ replication="true"
+ createrole="true"
+ inherit="true"
  login="true"
+ bypassrls="true"
  encrypted="true"
  password="labiot2020.">
 </role>
 
-<database name="SmartFarm" encoding="UTF8" is-template="false" allow-conns="true">
+<database name="SmartFarm" encoding="UTF8" is-template="false" allow-conns="true" append-at-eod="true">
 	<role name="smartfarmer"/>
+	<appended-sql><![CDATA[INSERT INTO "SensorMeasurementConversion" ("equation", "description")
+VALUES
+    ('20.25 * raw - 8.1', 'equacao de conversao dos valores do anemometro'),
+    ('raw / (17.8846 - 0.01306 * raw)', 'equacao de conversao dos valores da umidade do chao, solo davis'),
+    ('raw * 598.8024', 'equacao de conversao dos valores da placa solar');
+]]></appended-sql>
 </database>
 
 <schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="Station" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="Station" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2380" y="1060"/>
@@ -46,12 +57,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="deactivationTS">
 		<type name="timestamp with time zone" length="0" with-timezone="true"/>
 	</column>
-	<constraint name="Station_pk" type="pk-constr" table="public.&quot;Station&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="Station_Code_Unique" type="uq-constr" table="public.&quot;Station&quot;">
-		<columns names="code" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Station_pk" type="pk-constr" table="public.&quot;Station&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="Station_Code_Unique" type="uq-constr" table="public.&quot;Station&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_StationModel" index="6"/>
@@ -62,7 +75,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</customidxs>
 </table>
 
-<table name="StationModel" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="StationModel" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2400" y="700"/>
@@ -81,9 +94,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="StationModel_pk" type="pk-constr" table="public.&quot;StationModel&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="StationModel_pk" type="pk-constr" table="public.&quot;StationModel&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="Station_has_Model" type="rel1n" layers="0"
@@ -94,27 +108,30 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Station&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Station_Sensor" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="Station_Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2920" y="1120"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="StationSensor_pk" type="pk-constr" table="public.&quot;Station_Sensor&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="StationSensor_pk" type="pk-constr" table="public.&quot;Station_Sensor&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_Sensor" index="1"/>
+		<object name="id_Station" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="Sensor_fk" index="1"/>
+		<object name="Station_fk" index="2"/>
 	</customidxs>
 </table>
 
-<table name="Sensor" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="7" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="3480" y="1100"/>
@@ -134,12 +151,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="lifespan">
 		<type name="interval" length="0"/>
 	</column>
-	<constraint name="Sensor_pk" type="pk-constr" table="public.&quot;Sensor&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="Sensor_Code_Unique" type="uq-constr" table="public.&quot;Sensor&quot;">
-		<columns names="code" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Sensor_pk" type="pk-constr" table="public.&quot;Sensor&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="Sensor_Code_Unique" type="uq-constr" table="public.&quot;Sensor&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_Manufacturer" index="5"/>
@@ -158,7 +177,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Station_Sensor&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+<table name="MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4740" y="1160"/>
@@ -174,15 +193,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="MeasurementUnit_pk" type="pk-constr" table="public.&quot;MeasurementUnit&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="MeasurementUnit_Code_Unique" type="uq-constr" table="public.&quot;MeasurementUnit&quot;">
-		<columns names="code" ref-type="src-columns"/>
-	</constraint>
+<constraint name="MeasurementUnit_pk" type="pk-constr" table="public.&quot;MeasurementUnit&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="MeasurementUnit_Code_Unique" type="uq-constr" table="public.&quot;MeasurementUnit&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
-<table name="Sensor_MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="Sensor_MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4080" y="1100"/>
@@ -201,14 +222,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="double precision" length="0"/>
 		<comment><![CDATA[Maximum value the sensor can report]]></comment>
 	</column>
-	<constraint name="MeasurementUnit_Sensor_pk" type="pk-constr" table="public.&quot;Sensor_MeasurementUnit&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="MeasurementUnit_Sensor_pk" type="pk-constr" table="public.&quot;Sensor_MeasurementUnit&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
-		<object name="id_MeasurementUnit" index="1"/>
-		<object name="id_Sensor" index="6"/>
-		<object name="id_SensorMeasurementConversion" index="2"/>
+		<object name="id_MeasurementUnit" index="5"/>
+		<object name="id_Sensor" index="4"/>
+		<object name="id_SensorMeasurementConversion" index="6"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -234,7 +256,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Sensor_MeasurementUnit&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="SensorMeasurementConversion" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="SensorMeasurementConversion" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4080" y="740"/>
@@ -247,9 +269,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="SensorMeasurementConversion_pk" type="pk-constr" table="public.&quot;SensorMeasurementConversion&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="SensorMeasurementConversion_pk" type="pk-constr" table="public.&quot;SensorMeasurementConversion&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="SensorConversion" type="rel1n" layers="0"
@@ -260,7 +283,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Sensor_MeasurementUnit&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Manufacturer" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="Manufacturer" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="3500" y="700"/>
@@ -270,9 +293,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="Manufacturer_pk" type="pk-constr" table="public.&quot;Manufacturer&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Manufacturer_pk" type="pk-constr" table="public.&quot;Manufacturer&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_Country" index="2"/>
@@ -291,7 +315,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Sensor&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="MeasuredData" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="MeasuredData" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4640" y="2180"/>
@@ -310,15 +334,16 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="code_Station_Sensor_MeasurementUnit" not-null="true">
 		<type name="int8" length="0"/>
 	</column>
-	<constraint name="MeasuredData_pk" type="pk-constr" table="public.&quot;MeasuredData&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="MeasuredData_pk" type="pk-constr" table="public.&quot;MeasuredData&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
-<table name="TimeSeries" layers="0" collapse-mode="2" max-obj-count="12" z-value="0">
+<table name="TimeSeries" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="12" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
-	<position x="3820" y="2760"/>
+	<position x="3800" y="2740"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -346,9 +371,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="code_Station_Sensor_MeasurementUnit" not-null="true">
 		<type name="int8" length="0"/>
 	</column>
-	<constraint name="TimeSeries_pk" type="pk-constr" table="public.&quot;TimeSeries&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="TimeSeries_pk" type="pk-constr" table="public.&quot;TimeSeries&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_TimeSeriesInterval" index="9"/>
@@ -359,7 +385,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</customidxs>
 </table>
 
-<table name="TimeSeriesInterval" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="TimeSeriesInterval" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4780" y="2900"/>
@@ -369,9 +395,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="TimeSeriesInterval_pk" type="pk-constr" table="public.&quot;TimeSeriesInterval&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="TimeSeriesInterval_pk" type="pk-constr" table="public.&quot;TimeSeriesInterval&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="TimeSeriesInterval_has_many_TimeSeries" type="rel1n" layers="0"
@@ -382,7 +409,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;TimeSeries&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Country" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="Country" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2560" y="320"/>
@@ -395,12 +422,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="code" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="country_pk" type="pk-constr" table="public.&quot;Country&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="Country_Code_Unique" type="uq-constr" table="public.&quot;Country&quot;">
-		<columns names="code" ref-type="src-columns"/>
-	</constraint>
+<constraint name="country_pk" type="pk-constr" table="public.&quot;Country&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="Country_Code_Unique" type="uq-constr" table="public.&quot;Country&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="country_has_many_Manufacturer" type="rel1n" layers="0"
@@ -411,22 +440,24 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Manufacturer&quot;"
 	 src-required="true" dst-required="false"/>
 
-<table name="Station_Sensor_MeasurementUnit" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="Station_Sensor_MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
-	<position x="3900" y="2140"/>
+	<position x="3680" y="2160"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="code" not-null="true">
 		<type name="int8" length="0"/>
 	</column>
-	<constraint name="MeasuredData_Pivot_pk" type="pk-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="MeasuredData_Pivot_Code_Unique" type="uq-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
-		<columns names="code" ref-type="src-columns"/>
-	</constraint>
+<constraint name="MeasuredData_Pivot_pk" type="pk-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="MeasuredData_Pivot_Code_Unique" type="uq-constr" table="public.&quot;Station_Sensor_MeasurementUnit&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
 
 	<customidxs object-type="column">
 		<object name="id_MeasurementUnit" index="4"/>
@@ -504,7 +535,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<function signature="public.&quot;Update_SSM_Pivots&quot;()"/>
 </trigger>
 
-<table name="Farm" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="Farm" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1300" y="1120"/>
@@ -526,21 +557,41 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="deactivatedAt">
 		<type name="timestamp with time zone" length="0" with-timezone="true"/>
 	</column>
-	<constraint name="Farm_pk" type="pk-constr" table="public.&quot;Farm&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Farm_pk" type="pk-constr" table="public.&quot;Farm&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Address" index="6"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Address_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="Farm_Station" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="Farm_Station" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1880" y="1120"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="Farm_Station_pk" type="pk-constr" table="public.&quot;Farm_Station&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Farm_Station_pk" type="pk-constr" table="public.&quot;Farm_Station&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Farm" index="1"/>
+		<object name="id_Station" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Farm_fk" index="1"/>
+		<object name="Station_fk" index="2"/>
+	</customidxs>
 </table>
 
 <relationship name="Farm_has_many_Farm_Station" type="rel1n" layers="0"
@@ -559,7 +610,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Farm_Station&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="User" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+<table name="User" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="13" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="180" y="1080"/>
@@ -590,21 +641,43 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="deactivatedAt">
 		<type name="timestamp with time zone" length="0" with-timezone="true"/>
 	</column>
-	<constraint name="User_pk" type="pk-constr" table="public.&quot;User&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="User_pk" type="pk-constr" table="public.&quot;User&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Address" index="10"/>
+		<object name="id_Email" index="9"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Address_fk" index="2"/>
+		<object name="Email_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="User_Farm" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="User_Farm" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="780" y="1140"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="User_Farm_pk" type="pk-constr" table="public.&quot;User_Farm&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="User_Farm_pk" type="pk-constr" table="public.&quot;User_Farm&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Farm" index="2"/>
+		<object name="id_User" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Farm_fk" index="2"/>
+		<object name="User_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="User_has_many_User_Farm" type="rel1n" layers="0"
@@ -623,7 +696,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;User_Farm&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Email" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="Email" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="60" y="780"/>
@@ -633,9 +706,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="address" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="Email_pk" type="pk-constr" table="public.&quot;Email&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Email_pk" type="pk-constr" table="public.&quot;Email&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="Email_has_many_User" type="rel1n" layers="0"
@@ -646,7 +720,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;User&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Phone" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="Phone" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="7" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="540" y="360"/>
@@ -665,21 +739,41 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="active" not-null="true" default-value="true">
 		<type name="boolean" length="0"/>
 	</column>
-	<constraint name="Phone_pk" type="pk-constr" table="public.&quot;Phone&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Phone_pk" type="pk-constr" table="public.&quot;Phone&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_PhoneType" index="5"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="PhoneType_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="User_Phone" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="User_Phone" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="400" y="760"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="User_Phone_pk" type="pk-constr" table="public.&quot;User_Phone&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="User_Phone_pk" type="pk-constr" table="public.&quot;User_Phone&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Phone" index="2"/>
+		<object name="id_User" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Phone_fk" index="2"/>
+		<object name="User_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="User_has_many_User_Phone" type="rel1n" layers="0"
@@ -698,7 +792,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;User_Phone&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="PhoneType" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="PhoneType" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="40" y="420"/>
@@ -708,9 +802,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="PhoneType_pk" type="pk-constr" table="public.&quot;PhoneType&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="PhoneType_pk" type="pk-constr" table="public.&quot;PhoneType&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
 <relationship name="PhoneType_has_many_Phone" type="rel1n" layers="0"
@@ -721,7 +816,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Phone&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Address" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="Address" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="780" y="860"/>
@@ -737,9 +832,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="active" not-null="true" default-value="true">
 		<type name="boolean" length="0"/>
 	</column>
-	<constraint name="Address_pk" type="pk-constr" table="public.&quot;Address&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Address_pk" type="pk-constr" table="public.&quot;Address&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Area" index="4"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Area_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="Address_has_many_User" type="rel1n" layers="0"
@@ -758,55 +862,95 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.&quot;Farm&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Area" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="Area" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="860" y="380"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="Area_pk" type="pk-constr" table="public.&quot;Area&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="Area_pk" type="pk-constr" table="public.&quot;Area&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_PublicPlace" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="PublicPlace_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="PostalArea" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="PostalArea" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1120" y="700"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="PostalArea_pk" type="pk-constr" table="public.&quot;PostalArea&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="PostalArea_pk" type="pk-constr" table="public.&quot;PostalArea&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Area" index="2"/>
+		<object name="id_District" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Area_fk" index="2"/>
+		<object name="District_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="District" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="District" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1580" y="720"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="District_pk" type="pk-constr" table="public.&quot;District&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="District_pk" type="pk-constr" table="public.&quot;District&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_City" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="City_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="PublicPlace" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="PublicPlace" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1540" y="300"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<constraint name="PublicPlace_pk" type="pk-constr" table="public.&quot;PublicPlace&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="PublicPlace_pk" type="pk-constr" table="public.&quot;PublicPlace&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_District" index="1"/>
+		<object name="id_PublicPlaceType" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="District_fk" index="1"/>
+		<object name="PublicPlaceType_fk" index="2"/>
+	</customidxs>
 </table>
 
-<table name="PublicPlaceType" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+<table name="PublicPlaceType" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="1520" y="20"/>
@@ -816,12 +960,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="PublicPlaceType_pk" type="pk-constr" table="public.&quot;PublicPlaceType&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="PublicPlaceType_pk" type="pk-constr" table="public.&quot;PublicPlaceType&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
 </table>
 
-<table name="City" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="City" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2060" y="680"/>
@@ -831,12 +976,21 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="City_pk" type="pk-constr" table="public.&quot;City&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="City_pk" type="pk-constr" table="public.&quot;City&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_State" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="State_fk" index="1"/>
+	</customidxs>
 </table>
 
-<table name="State" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="State" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2060" y="320"/>
@@ -846,9 +1000,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="State_pk" type="pk-constr" table="public.&quot;State&quot;">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
+<constraint name="State_pk" type="pk-constr" table="public.&quot;State&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_Country" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="Country_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="Country_has_many_State" type="rel1n" layers="0"
@@ -939,6 +1102,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 			<column name="timestamp"/>
 		</idxelement>
 </index>
+
+<constraint name="id_Sensor_id_MeasurementUnit_uq" type="uq-constr" table="public.&quot;Sensor_MeasurementUnit&quot;">
+	<columns names="id_MeasurementUnit,id_Sensor" ref-type="src-columns"/>
+		<comment><![CDATA[The pair of Sensor ID and MeasurementUnit ID has to be unique]]></comment>
+</constraint>
 
 <constraint name="Station_Sensor_MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;MeasuredData&quot;">

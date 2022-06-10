@@ -14,7 +14,7 @@ app.use('/ota', express.static('/var/ota'))
 const nimbusDB = new Pool({
 	idleTimeoutMillis: 30000,
 	connectionTimeoutMillis: 2000,
-})
+});
 
 app.listen(port, () => {
 	console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

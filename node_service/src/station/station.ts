@@ -1,9 +1,15 @@
-import { Prisma } from '@prisma/client';
+import { MeasuredData, Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import PrismaGlobal from "../prisma";
+import math from "mathjs";
 
-
-
+/**
+ * Endpoint for data insertion from a collection of stations
+ * @param req 
+ * @param res 
+ * @param next 
+ * @returns 
+ */
 export async function StationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     console.debug("Handling Stations");
     console.debug(req.body);
@@ -89,6 +95,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                     let measuredData: Prisma.MeasuredDataCreateInput = {
                         rawValue: Number(value),
                         timestamp: new Date(timestamp),
+                        convertedValue: null,
                         Station_Sensor_MeasurementUnit: {
                             connectOrCreate: {
                                 create: station_Sensor_MeasurementUnitData,
@@ -100,12 +107,15 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                     };
 
                     try {
-                        await prisma.measuredData.create({
+                        let measuredDataInserted = await prisma.measuredData.create({
                             data: measuredData
                         });
+                        
+                        dataConvertionHandler(measuredDataInserted, sensorCode, measurementUnitCode);
+
                     } catch (error: any) {
                         console.debug(error);
-                        return res.status(403).json({ message: "Could not insert measured data" });
+                        // return res.status(403).json({ message: "Could not insert measured data" });
                     }
                 }
             }
@@ -113,4 +123,49 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
     }
 
     return res.status(200).json({ message: "stations data was added sucessfully" });
+}
+
+/**
+ * handler for data convertion using the equations in the database
+ * @param measuredData measured data from sensor
+ * @param sensorCode sensor code
+ * @param measurementUnitCode measurement unit
+ */
+async function dataConvertionHandler(measuredData: MeasuredData, sensorCode: string, measurementUnitCode: string) {
+    const prisma = PrismaGlobal.getInstance().prisma;
+
+    /// fetch SensorMeasurementConversion
+    let sensorMeasurementUnit = await prisma.sensor_MeasurementUnit.findFirst({
+        where: {
+            Sensor: {
+                code: sensorCode
+            },
+            MeasurementUnit: {
+                code: measurementUnitCode
+            }
+        },
+        select: {
+            SensorMeasurementConversion: true
+        }
+    });
+
+    /// get text equation from SensorMeasurementConversion
+    let convertionEquation = sensorMeasurementUnit?.SensorMeasurementConversion?.equation;
+
+    if(convertionEquation) {
+        /// evaluate giving the necessary inputs
+        let convertedValue: number = math.evaluate(convertionEquation, {raw: measuredData.rawValue});
+
+        /// update measured data with converted value
+        await prisma.measuredData.update({
+            where: {
+                id: measuredData.id
+            },
+            data: {
+                convertedValue: convertedValue
+            }
+        });
+
+        console.log("Data was converted sucessfully");
+    }
 }
