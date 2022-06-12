@@ -5,28 +5,24 @@ import { HandlerError, HandlerErrors } from "../handler-error/handler-error";
 import PrismaGlobal from "../prisma";
 import math from "mathjs";
 
+const MeasuredValueInsertModel = object({
+    timestamp: number(),
+    value: number()
+});
+
 const MeasurementUnitInsertModel = record(
     string(),
-    array(object({
-        timestamp: string(),
-        value: number()
-    }))
-)
+    array(MeasuredValueInsertModel)
+);
 
 const SensorInsertModel = record(
     string(),
     MeasurementUnitInsertModel
-)
+);
 
 const StationInsertModel = record(
     string(),
     SensorInsertModel
-)
-
-/// Stations model for insertion
-const StationsInsertModel = record(
-    string(),
-    StationInsertModel
 );
 
 /**
@@ -43,9 +39,9 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
     let reqBody = req.body;
     /// validate input
     try {
-        assert(reqBody, StationsInsertModel);
+        assert(reqBody, StationInsertModel  );
     } catch (error) {
-        console.log("Error trying to get clients: ", error);
+        console.log("Error trying to insert stations: ", error);
 
         let errorRes: HandlerError = {
             message: "Bad Request, couldn't validate data.",
@@ -136,7 +132,6 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                     let measuredData: Prisma.MeasuredDataCreateInput = {
                         rawValue: Number(value),
                         timestamp: new Date(timestamp),
-                        convertedValue: null,
                         Station_Sensor_MeasurementUnit: {
                             connectOrCreate: {
                                 create: station_Sensor_MeasurementUnitData,
@@ -151,7 +146,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                         let measuredDataInserted = await prisma.measuredData.create({
                             data: measuredData
                         });
-                        
+
                         dataConvertionHandler(measuredDataInserted, sensorCode, measurementUnitCode);
 
                     } catch (error: any) {
@@ -193,9 +188,9 @@ async function dataConvertionHandler(measuredData: MeasuredData, sensorCode: str
     /// get text equation from SensorMeasurementConversion
     let convertionEquation = sensorMeasurementUnit?.SensorMeasurementConversion?.equation;
 
-    if(convertionEquation) {
+    if (convertionEquation) {
         /// evaluate giving the necessary inputs
-        let convertedValue: number = math.evaluate(convertionEquation, {raw: measuredData.rawValue});
+        let convertedValue: number = math.evaluate(convertionEquation, { raw: measuredData.rawValue });
 
         /// update measured data with converted value
         await prisma.measuredData.update({

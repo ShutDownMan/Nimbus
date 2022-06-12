@@ -21,7 +21,7 @@ ALTER TABLE public."Station" ADD COLUMN id serial NOT NULL;
 
 -- object: code | type: COLUMN --
 -- ALTER TABLE public."Station" DROP COLUMN IF EXISTS code CASCADE;
-ALTER TABLE public."Station" ADD COLUMN code int8 NOT NULL;
+ALTER TABLE public."Station" ADD COLUMN code char(12) NOT NULL;
 -- ddl-end --
 
 
@@ -168,7 +168,7 @@ ALTER TABLE public."Sensor" ADD COLUMN id serial NOT NULL;
 
 -- object: code | type: COLUMN --
 -- ALTER TABLE public."Sensor" DROP COLUMN IF EXISTS code CASCADE;
-ALTER TABLE public."Sensor" ADD COLUMN code int8 NOT NULL;
+ALTER TABLE public."Sensor" ADD COLUMN code char(2) NOT NULL;
 -- ddl-end --
 
 COMMENT ON COLUMN public."Sensor".code IS E'The self-reporting code given by the stations sensors';
@@ -234,7 +234,7 @@ ALTER TABLE public."MeasurementUnit" ADD COLUMN id serial NOT NULL;
 
 -- object: code | type: COLUMN --
 -- ALTER TABLE public."MeasurementUnit" DROP COLUMN IF EXISTS code CASCADE;
-ALTER TABLE public."MeasurementUnit" ADD COLUMN code int8 NOT NULL;
+ALTER TABLE public."MeasurementUnit" ADD COLUMN code char(2) NOT NULL;
 -- ddl-end --
 
 
@@ -456,7 +456,7 @@ ALTER TABLE public."MeasuredData" ADD COLUMN "timestamp" timestamp with time zon
 
 -- object: "code_Station_Sensor_MeasurementUnit" | type: COLUMN --
 -- ALTER TABLE public."MeasuredData" DROP COLUMN IF EXISTS "code_Station_Sensor_MeasurementUnit" CASCADE;
-ALTER TABLE public."MeasuredData" ADD COLUMN "code_Station_Sensor_MeasurementUnit" int8 NOT NULL;
+ALTER TABLE public."MeasuredData" ADD COLUMN "code_Station_Sensor_MeasurementUnit" char(16) NOT NULL;
 -- ddl-end --
 
 
@@ -525,7 +525,7 @@ ALTER TABLE public."TimeSeries" ADD COLUMN max double precision;
 
 -- object: "code_Station_Sensor_MeasurementUnit" | type: COLUMN --
 -- ALTER TABLE public."TimeSeries" DROP COLUMN IF EXISTS "code_Station_Sensor_MeasurementUnit" CASCADE;
-ALTER TABLE public."TimeSeries" ADD COLUMN "code_Station_Sensor_MeasurementUnit" int8 NOT NULL;
+ALTER TABLE public."TimeSeries" ADD COLUMN "code_Station_Sensor_MeasurementUnit" char(16) NOT NULL;
 -- ddl-end --
 
 
@@ -637,7 +637,7 @@ ALTER TABLE public."Station_Sensor_MeasurementUnit" ADD COLUMN id serial NOT NUL
 
 -- object: code | type: COLUMN --
 -- ALTER TABLE public."Station_Sensor_MeasurementUnit" DROP COLUMN IF EXISTS code CASCADE;
-ALTER TABLE public."Station_Sensor_MeasurementUnit" ADD COLUMN code int8 NOT NULL;
+ALTER TABLE public."Station_Sensor_MeasurementUnit" ADD COLUMN code char(16) NOT NULL;
 -- ddl-end --
 
 
@@ -1465,16 +1465,6 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE public."PublicPlace" ADD CONSTRAINT "PublicPlaceType_fk" FOREIGN KEY ("id_PublicPlaceType")
 REFERENCES public."PublicPlaceType" (id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
--- ddl-end --
-
--- object: "code_Station_Sensor_MeasurementUnit_index" | type: INDEX --
--- DROP INDEX IF EXISTS public."code_Station_Sensor_MeasurementUnit_index" CASCADE;
-CREATE INDEX "code_Station_Sensor_MeasurementUnit_index" ON public."MeasuredData"
-USING btree
-(
-	"code_Station_Sensor_MeasurementUnit"
-)
-INCLUDE ("code_Station_Sensor_MeasurementUnit");
 -- ddl-end --
 
 -- object: timestamp_index | type: INDEX --

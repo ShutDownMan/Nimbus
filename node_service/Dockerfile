@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json .
 
-RUN npm i
+RUN node --dns-result-order=ipv4first "$(which npm)" i
 
 COPY . .
 

@@ -92,12 +92,13 @@ model MeasuredData {
   timestamp                           DateTime?                      @db.Timestamptz(6)
   code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
   Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
-  TimeSeries_MeasureData              TimeSeries_MeasureData[]
+
+  @@index([timestamp], map: "timestamp_index")
 }
 
 model MeasurementUnit {
   id                             Int                              @id(map: "MeasurementUnit_pk") @default(autoincrement())
-  code                           String                           @unique(map: "MeasurementUnit_Code_Unique") @db.Char(16)
+  code                           String                           @unique(map: "MeasurementUnit_Code_Unique") @db.Char(2)
   name                           String?
   description                    String?
   Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
@@ -146,7 +147,7 @@ model PublicPlaceType {
 
 model Sensor {
   id                             Int                              @id(map: "Sensor_pk") @default(autoincrement())
-  code                           String                           @unique(map: "Sensor_Code_Unique") @db.Char(16)
+  code                           String                           @unique(map: "Sensor_Code_Unique") @db.Char(2)
   serial                         Int?
   SKU                            String?
   lifespan                       Unsupported("interval")?
@@ -166,15 +167,17 @@ model SensorMeasurementConversion {
 
 model Sensor_MeasurementUnit {
   id                             Int                          @id(map: "MeasurementUnit_Sensor_pk") @default(autoincrement())
-  id_MeasurementUnit             Int?
-  id_SensorMeasurementConversion Int?
   precision                      Float?
   minValue                       Float?
   maxValue                       Float?
   id_Sensor                      Int?
+  id_MeasurementUnit             Int?
+  id_SensorMeasurementConversion Int?
   MeasurementUnit                MeasurementUnit?             @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
   Sensor                         Sensor?                      @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
   SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], map: "SensorMeasurementConversion_fk")
+
+  @@unique([id_MeasurementUnit, id_Sensor], map: "id_Sensor_id_MeasurementUnit_uq")
 }
 
 model State {
@@ -187,7 +190,7 @@ model State {
 
 model Station {
   id                             Int                              @id(map: "Station_pk") @default(autoincrement())
-  code                           String                           @unique(map: "Station_Code_Unique") @db.Char(16)
+  code                           String                           @unique(map: "Station_Code_Unique") @db.Char(12)
   description                    String?
   creationTS                     DateTime?                        @default(now()) @db.Timestamptz(6)
   active                         Boolean                          @default(true)
@@ -226,34 +229,28 @@ model Station_Sensor_MeasurementUnit {
   Sensor             Sensor?          @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
   Station            Station?         @relation(fields: [id_Station], references: [id], map: "Station_fk")
   MeasuredData       MeasuredData[]
+  TimeSeries         TimeSeries[]
 }
 
 model TimeSeries {
-  id                     Int                      @id(map: "TimeSeries_pk") @default(autoincrement())
-  startTS                DateTime                 @db.Timestamptz(6)
-  endTS                  DateTime                 @db.Timestamptz(6)
-  count                  Int?
-  sum                    Float?
-  average                Float?
-  min                    Float?
-  max                    Float?
-  id_TimeSeriesInterval  Int?
-  TimeSeriesInterval     TimeSeriesInterval?      @relation(fields: [id_TimeSeriesInterval], references: [id], map: "TimeSeriesInterval_fk")
-  TimeSeries_MeasureData TimeSeries_MeasureData[]
+  id                                  Int                            @id(map: "TimeSeries_pk") @default(autoincrement())
+  startTS                             DateTime                       @db.Timestamptz(6)
+  endTS                               DateTime                       @db.Timestamptz(6)
+  count                               Int?
+  sum                                 Float?
+  average                             Float?
+  min                                 Float?
+  max                                 Float?
+  code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
+  id_TimeSeriesInterval               Int?
+  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "code_Station_Sensor_MeasurementUnit_fk")
+  TimeSeriesInterval                  TimeSeriesInterval?            @relation(fields: [id_TimeSeriesInterval], references: [id], map: "TimeSeriesInterval_fk")
 }
 
 model TimeSeriesInterval {
   id          Int          @id(map: "TimeSeriesInterval_pk") @default(autoincrement())
   description String
   TimeSeries  TimeSeries[]
-}
-
-model TimeSeries_MeasureData {
-  id              Int           @id(map: "TimeSeries_MeasureData_pk") @default(autoincrement())
-  id_TimeSeries   Int?
-  id_MeasuredData Int?
-  MeasuredData    MeasuredData? @relation(fields: [id_MeasuredData], references: [id], map: "MeasuredData_fk")
-  TimeSeries      TimeSeries?   @relation(fields: [id_TimeSeries], references: [id], map: "TimeSeries_fk")
 }
 
 model User {
