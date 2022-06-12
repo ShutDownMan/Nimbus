@@ -1,7 +1,33 @@
+import { array, assert, object, record, string, number } from 'superstruct'
 import { MeasuredData, Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
+import { HandlerError, HandlerErrors } from "../handler-error/handler-error";
 import PrismaGlobal from "../prisma";
 import math from "mathjs";
+
+const MeasurementUnitInsertModel = record(
+    string(),
+    array(object({
+        timestamp: string(),
+        value: number()
+    }))
+)
+
+const SensorInsertModel = record(
+    string(),
+    MeasurementUnitInsertModel
+)
+
+const StationInsertModel = record(
+    string(),
+    SensorInsertModel
+)
+
+/// Stations model for insertion
+const StationsInsertModel = record(
+    string(),
+    StationInsertModel
+);
 
 /**
  * Endpoint for data insertion from a collection of stations
@@ -13,6 +39,21 @@ import math from "mathjs";
 export async function StationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     console.debug("Handling Stations");
     console.debug(req.body);
+
+    let reqBody = req.body;
+    /// validate input
+    try {
+        assert(reqBody, StationsInsertModel);
+    } catch (error) {
+        console.log("Error trying to get clients: ", error);
+
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't validate data.",
+            type: HandlerErrors.ValidationError
+        };
+
+        return res.status(403).json(errorRes);
+    }
 
     const prisma = PrismaGlobal.getInstance().prisma;
 
