@@ -203,5 +203,7 @@ async function dataConvertionHandler(measuredData: MeasuredData, sensorCode: str
         });
 
         console.log("Data was converted sucessfully");
+    } else {
+        console.log("No equation available for data conversion");
     }
 }
