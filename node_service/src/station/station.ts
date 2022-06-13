@@ -3,7 +3,7 @@ import { MeasuredData, Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HandlerError, HandlerErrors } from "../handler-error/handler-error";
 import PrismaGlobal from "../prisma";
-import math from "mathjs";
+import { evaluate } from "mathjs";
 
 const MeasuredValueInsertModel = object({
     timestamp: number(),
@@ -190,7 +190,7 @@ async function dataConvertionHandler(measuredData: MeasuredData, sensorCode: str
 
     if (convertionEquation) {
         /// evaluate giving the necessary inputs
-        let convertedValue: number = math.evaluate(convertionEquation, { raw: measuredData.rawValue });
+        let convertedValue: number = evaluate(convertionEquation, { raw: measuredData.rawValue });
 
         /// update measured data with converted value
         await prisma.measuredData.update({
