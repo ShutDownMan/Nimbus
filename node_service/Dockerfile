@@ -12,7 +12,7 @@ RUN npx prisma generate
 
 RUN npm run build
 
-RUN npm run test
+# RUN npm run test
 
 EXPOSE 8080
 
