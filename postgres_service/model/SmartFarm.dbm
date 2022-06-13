@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1559,635" last-zoom="0.7" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1558,634" last-zoom="0.7" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -520,11 +520,11 @@ VALUES
 	<definition><![CDATA[	BEGIN
 
 		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor")
-		ON CONFLICT ON CONSTRAINT id_Station_id_Sensor_uq 
+		ON CONFLICT ON CONSTRAINT "id_Station_id_Sensor_uq"
 		DO NOTHING;
 
 		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit")
-		ON CONFLICT ON CONSTRAINT id_Sensor_id_MeasurementUnit_uq 
+		ON CONFLICT ON CONSTRAINT "id_Sensor_id_MeasurementUnit_uq" 
 		DO NOTHING;
 
 		RETURN new;
