@@ -9,7 +9,7 @@
     "dbgenerate": "prisma generate",
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "test": "sh ./.env.test && jest",
+    "test": ". ./.env.test && jest",
     "postinstall": "prisma generate"
   },
   "author": "Jedson Gabriel",
