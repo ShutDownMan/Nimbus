@@ -1497,13 +1497,3 @@ ALTER TABLE public."TimeSeries" ADD CONSTRAINT "code_Station_Sensor_MeasurementU
 REFERENCES public."Station_Sensor_MeasurementUnit" (code) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
-
-
--- Appended SQL commands --
-INSERT INTO "SensorMeasurementConversion" ("equation", "description")
-VALUES
-    ('20.25 * raw - 8.1', 'equacao de conversao dos valores do anemometro'),
-    ('raw / (17.8846 - 0.01306 * raw)', 'equacao de conversao dos valores da umidade do chao, solo davis'),
-    ('raw * 598.8024', 'equacao de conversao dos valores da placa solar');
-
--- ddl-end --
