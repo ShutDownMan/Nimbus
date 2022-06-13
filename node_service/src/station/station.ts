@@ -56,7 +56,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
     /// for each station
     for (let kv_station of Object.entries(req.body)) {
         /// get station code and station list
-        let stationCode: string = kv_station[0].padStart(12, "0")
+        let stationCode: string = kv_station[0].padStart(12, "0").slice(0, 12)
         let sensors: any = kv_station[1]
 
         /// prepare station for insertion if needed
@@ -68,7 +68,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
         /// for each sensor in the station
         for (let kv_sensor of Object.entries(sensors)) {
             /// get sensor code and measurement units list
-            let sensorCode: string = kv_sensor[0].padStart(2, "0")
+            let sensorCode: string = kv_sensor[0].padStart(2, "0").slice(0, 2)
             let measurementUnits: any = kv_sensor[1]
 
             /// prepare sensor for insertion if needed
@@ -80,7 +80,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
             /// for each measurement unit in the sensor
             for (let kv_measurementUnit of Object.entries(measurementUnits)) {
                 /// get sensor code and measurement units list
-                let measurementUnitCode: string = kv_measurementUnit[0].padStart(2, "0")
+                let measurementUnitCode: string = kv_measurementUnit[0].padStart(2, "0").slice(0, 2)
                 let measuredValues: any = kv_measurementUnit[1]
 
                 console.debug(`running through measurementUnit "${measurementUnitCode}"`);
@@ -96,7 +96,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
                 /// for each measured value
                 for (let measuredValue of measuredValues) {
                     // measurementUnit.insertMeasuredValue(measuredValue);
-                    let timestamp: number = Number(measuredValue["timestamp"]) * 1000;
+                    let timestamp: number = Number(measuredValue["timestamp"]);
                     let value: number = Number(measuredValue["value"]);
 
                     console.debug(`inserting value "${value}" from ${timestamp}`);
@@ -158,7 +158,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
         }
     }
 
-    return res.status(200).json({ message: "stations data was added sucessfully" });
+    return res.status(200).json({ message: "station data were inserted sucessfully" });
 }
 
 /**

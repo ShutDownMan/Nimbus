@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1784,1224" last-zoom="0.7" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1964,404" last-zoom="0.7" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -24,9 +24,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="smartfarmer"/>
 	<appended-sql><![CDATA[INSERT INTO "SensorMeasurementConversion" ("equation", "description")
 VALUES
-    ('20.25 * raw - 8.1', 'equacao de conversao dos valores do anemometro'),
-    ('raw / (17.8846 - 0.01306 * raw)', 'equacao de conversao dos valores da umidade do chao, solo davis'),
-    ('raw * 598.8024', 'equacao de conversao dos valores da placa solar');
+    ('20.25 * raw - 8.1', 'equação de conversão dos valores do anemômetro'),
+    ('raw / (17.8846 - 0.01306 * raw)', 'equação de conversão dos valores da umidade do chão, solo davis'),
+    ('raw * 598.8024', 'equação de conversão dos valores da placa solar');
 ]]></appended-sql>
 </database>
 

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import { Pool } from 'pg';
+import { EquationHandler } from './equation/equation';
 import { StationHandler } from './station/station';
 
 dotenv.config();
@@ -28,3 +29,8 @@ app.post(
 	'/Station',
 	StationHandler
 );
+
+app.post(
+	'/Equation',
+	EquationHandler
+)
