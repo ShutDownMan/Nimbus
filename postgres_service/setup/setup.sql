@@ -714,9 +714,13 @@ CREATE FUNCTION public."Update_SSM_Pivots" ()
 	AS $$
 	BEGIN
 
-		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor");
+		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor")
+		ON CONFLICT ON CONSTRAINT id_Station_id_Sensor_uq 
+		DO NOTHING;
 
-		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit");
+		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit")
+		ON CONFLICT ON CONSTRAINT id_Sensor_id_MeasurementUnit_uq 
+		DO NOTHING;
 
 		RETURN new;
 	END
@@ -1484,6 +1488,11 @@ COMMENT ON CONSTRAINT "id_Sensor_id_MeasurementUnit_uq" ON public."Sensor_Measur
 -- ddl-end --
 
 
+-- object: "id_Station_id_Sensor_uq" | type: CONSTRAINT --
+-- ALTER TABLE public."Station_Sensor" DROP CONSTRAINT IF EXISTS "id_Station_id_Sensor_uq" CASCADE;
+ALTER TABLE public."Station_Sensor" ADD CONSTRAINT "id_Station_id_Sensor_uq" UNIQUE ("id_Station","id_Sensor");
+-- ddl-end --
+
 -- object: "Station_Sensor_MeasurementUnit_fk" | type: CONSTRAINT --
 -- ALTER TABLE public."MeasuredData" DROP CONSTRAINT IF EXISTS "Station_Sensor_MeasurementUnit_fk" CASCADE;
 ALTER TABLE public."MeasuredData" ADD CONSTRAINT "Station_Sensor_MeasurementUnit_fk" FOREIGN KEY ("code_Station_Sensor_MeasurementUnit")
@@ -1496,4 +1505,14 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE public."TimeSeries" ADD CONSTRAINT "code_Station_Sensor_MeasurementUnit_fk" FOREIGN KEY ("code_Station_Sensor_MeasurementUnit")
 REFERENCES public."Station_Sensor_MeasurementUnit" (code) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+
+-- Appended SQL commands --
+INSERT INTO "SensorMeasurementConversion" ("equation", "description")
+VALUES
+    ('20.25 * raw - 8.1', 'equação de conversão dos valores do anemômetro'),
+    ('raw / (17.8846 - 0.01306 * raw)', 'equação de conversão dos valores da umidade do chão, solo davis'),
+    ('raw * 598.8024', 'equação de conversão dos valores da placa solar');
+
 -- ddl-end --

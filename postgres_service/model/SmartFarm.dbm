@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1965,1382" last-zoom="0.7" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1559,635" last-zoom="0.7" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -106,7 +106,7 @@ VALUES
 	 dst-table="public.&quot;Station&quot;"
 	 src-required="false" dst-required="false"/>
 
-<table name="Station_Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="Station_Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="2920" y="1120"/>
@@ -519,9 +519,13 @@ VALUES
 	</return-type>
 	<definition><![CDATA[	BEGIN
 
-		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor");
+		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor")
+		ON CONFLICT ON CONSTRAINT id_Station_id_Sensor_uq 
+		DO NOTHING;
 
-		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit");
+		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit")
+		ON CONFLICT ON CONSTRAINT id_Sensor_id_MeasurementUnit_uq 
+		DO NOTHING;
 
 		RETURN new;
 	END]]></definition>
@@ -1095,6 +1099,10 @@ VALUES
 <constraint name="id_Sensor_id_MeasurementUnit_uq" type="uq-constr" table="public.&quot;Sensor_MeasurementUnit&quot;">
 	<columns names="id_MeasurementUnit,id_Sensor" ref-type="src-columns"/>
 		<comment><![CDATA[The pair of Sensor ID and MeasurementUnit ID has to be unique]]></comment>
+</constraint>
+
+<constraint name="id_Station_id_Sensor_uq" type="uq-constr" table="public.&quot;Station_Sensor&quot;">
+	<columns names="id_Station,id_Sensor" ref-type="src-columns"/>
 </constraint>
 
 <constraint name="Station_Sensor_MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
