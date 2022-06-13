@@ -715,11 +715,11 @@ CREATE FUNCTION public."Update_SSM_Pivots" ()
 	BEGIN
 
 		INSERT INTO public."Station_Sensor" ("id_Station", "id_Sensor") VALUES (new."id_Station", new."id_Sensor")
-		ON CONFLICT ON CONSTRAINT id_Station_id_Sensor_uq 
+		ON CONFLICT ON CONSTRAINT "id_Station_id_Sensor_uq "
 		DO NOTHING;
 
 		INSERT INTO public."Sensor_MeasurementUnit"("id_Sensor", "id_MeasurementUnit") VALUES (new."id_Sensor", new."id_MeasurementUnit")
-		ON CONFLICT ON CONSTRAINT id_Sensor_id_MeasurementUnit_uq 
+		ON CONFLICT ON CONSTRAINT "id_Sensor_id_MeasurementUnit_uq" 
 		DO NOTHING;
 
 		RETURN new;
