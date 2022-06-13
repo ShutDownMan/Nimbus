@@ -53,6 +53,19 @@ export async function EquationHandler(req: Request, res: Response, next: NextFun
                 code: measurementUnitCode
             }
         });
+
+        if (!sensor || !measurementUnit) {
+            /// return an error status code
+            let errorRes: HandlerError = {
+                message: "Bad Request, could not find sensor or measurement unit",
+                type: HandlerErrors.DatabaseError
+            };
+            console.debug("Couldn't find sensor or measurement unit");
+            console.debug(sensor);
+            console.debug(measurementUnit);
+
+            return res.status(403).json(errorRes);
+        }
     }
 
     /// insert new equation on the database
