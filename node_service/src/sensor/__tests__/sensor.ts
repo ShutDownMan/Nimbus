@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express-serve-static-core'
 import { createServer } from '../../server'
+import { faker } from '@faker-js/faker';
 
 let server: Express
 
@@ -8,13 +9,18 @@ beforeAll(async () => {
     server = await createServer();
 });
 
-describe('POST /equation', () => {
+describe('POST /Sensor', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .post(`/equation`)
+            .post(`/Sensor`)
             .send({
-                equation: "20.25 * raw - 8.1",
-                description: "teste",
+                code: "00",
+                sku: "SK000000001",
+                lifespan: faker.date.future(),
+                manufacturer: {
+                    name: faker.company.companyName(),
+                    country: "BR",
+                },
             })
             .expect('Content-Type', /json/)
             .expect(202)
@@ -25,14 +31,11 @@ describe('POST /equation', () => {
             });
     });
 
-    it('should return 400 & sensor and measurement unit not found', done => {
+    it('should return 400 & validation error', done => {
         request(server)
-            .post(`/equation`)
+            .post(`/Sensor`)
             .send({
-                equation: "20.25 * raw - 8.1",
-                description: "teste",
-                sensor: "ff",
-                measurementUnit: "ff"
+
             })
             .expect('Content-Type', /json/)
             .expect(400)
@@ -45,10 +48,10 @@ describe('POST /equation', () => {
 });
 
 
-describe('DELETE /equation', () => {
-    it('should return 202 & DELETE equation & valid response', done => {
+describe('DELETE /Sensor', () => {
+    it('should return 202 & DELETE Sensor & valid response', done => {
         request(server)
-            .delete(`/equation`)
+            .delete(`/Sensor`)
             .send({
                 code: "00",
             })

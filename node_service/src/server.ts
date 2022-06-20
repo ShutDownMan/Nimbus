@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import { EquationHandler } from './equation/equation';
+import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler } from './sensor/sensor';
 import { StationHandler } from './station/station';
 
 export async function createServer(): Promise<Express> {
@@ -21,6 +22,26 @@ export async function createServer(): Promise<Express> {
     app.post(
         '/Equation',
         EquationHandler
+    );
+
+    app.get(
+        '/Sensor',
+        SensorFetchHandler
+    );
+
+    app.post(
+        '/Sensor',
+        SensorInsertHandler
+    );
+
+    app.patch(
+        '/Sensor',
+        SensorPatchHandler
+    );
+
+    app.delete(
+        '/Sensor',
+        SensorDeleteHandler
     );
 
     return app;

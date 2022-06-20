@@ -7,6 +7,6 @@ export enum HandlerErrors {
 }
 
 export interface HandlerError {
-    type: HandlerErrors,
+    error_type: HandlerErrors,
     message: string
 }

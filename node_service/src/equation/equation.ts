@@ -27,10 +27,10 @@ export async function EquationHandler(req: Request, res: Response, next: NextFun
         /// return an error status code
         let errorRes: HandlerError = {
             message: "Bad Request, couldn't validate data.",
-            type: HandlerErrors.ValidationError
+            error_type: HandlerErrors.ValidationError
         };
 
-        return res.status(403).json(errorRes);
+        return res.status(400).json(errorRes);
     }
 
     const prisma = PrismaGlobal.getInstance().prisma;
@@ -58,13 +58,13 @@ export async function EquationHandler(req: Request, res: Response, next: NextFun
             /// return an error status code
             let errorRes: HandlerError = {
                 message: "Bad Request, could not find sensor or measurement unit",
-                type: HandlerErrors.DatabaseError
+                error_type: HandlerErrors.DatabaseError
             };
             console.debug("Couldn't find sensor or measurement unit");
             console.debug(sensor);
             console.debug(measurementUnit);
 
-            return res.status(403).json(errorRes);
+            return res.status(400).json(errorRes);
         }
     }
 
@@ -93,14 +93,14 @@ export async function EquationHandler(req: Request, res: Response, next: NextFun
         /// return an error status code
         let errorRes: HandlerError = {
             message: "Bad Request, could not insert equation.",
-            type: HandlerErrors.DatabaseError
+            error_type: HandlerErrors.DatabaseError
         };
         console.debug(error);
 
-        return res.status(403).json(errorRes);
+        return res.status(400).json(errorRes);
     }
 
-    return res.status(200).json({ message: "equation was inserted sucessfully" });
+    return res.status(202).json({ message: "equation was inserted sucessfully" });
 }
 
 /**

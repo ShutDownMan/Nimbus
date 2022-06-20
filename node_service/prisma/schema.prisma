@@ -150,7 +150,7 @@ model Sensor {
   code                           String                           @unique(map: "Sensor_Code_Unique") @db.Char(2)
   serial                         Int?
   SKU                            String?
-  lifespan                       Unsupported("interval")?
+  lifespan                       DateTime?                        @db.Timestamptz(6)
   id_Manufacturer                Int?
   Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], map: "Manufacturer_fk")
   Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
@@ -217,6 +217,8 @@ model Station_Sensor {
   id_Station Int?
   Sensor     Sensor?  @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
   Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
+
+  @@unique([id_Station, id_Sensor], map: "id_Station_id_Sensor_uq")
 }
 
 model Station_Sensor_MeasurementUnit {

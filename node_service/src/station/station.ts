@@ -39,16 +39,16 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
     let reqBody = req.body;
     /// validate input
     try {
-        assert(reqBody, StationInsertModel  );
+        assert(reqBody, StationInsertModel);
     } catch (error) {
         console.log("Error trying to insert stations: ", error);
 
         let errorRes: HandlerError = {
             message: "Bad Request, couldn't validate data.",
-            type: HandlerErrors.ValidationError
+            error_type: HandlerErrors.ValidationError
         };
 
-        return res.status(403).json(errorRes);
+        return res.status(400).json(errorRes);
     }
 
     const prisma = PrismaGlobal.getInstance().prisma;
@@ -158,7 +158,7 @@ export async function StationHandler(req: Request, res: Response, next: NextFunc
         }
     }
 
-    return res.status(200).json({ message: "station data were inserted sucessfully" });
+    return res.status(202).json({ message: "station data were inserted sucessfully" });
 }
 
 /**
