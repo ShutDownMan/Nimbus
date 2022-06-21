@@ -9,10 +9,10 @@ beforeAll(async () => {
     server = await createServer();
 });
 
-describe('GET /Sensors', () => {
+describe('GET /sensors', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .get(`/Sensors`)
+            .get(`/sensors`)
             .send({
                 take: 10,
             })
@@ -27,25 +27,7 @@ describe('GET /Sensors', () => {
 
     it('should return 202 & valid response', done => {
         request(server)
-            .get(`/Sensors`)
-            .send({
-                take: 10,
-                page: 0,
-            })
-            .expect('Content-Type', /json/)
-            .expect(202)
-            .end((err, res) => {
-                if (err) return done(err)
-                expect(res.body.error_type).toBeUndefined()
-                done()
-            });
-    });
-});
-
-describe('GET /Sensor', () => {
-    it('should return 202 & valid response', done => {
-        request(server)
-            .get(`/Sensors`)
+            .get(`/sensors`)
             .send({
                 take: 10,
                 page: 0,
@@ -60,11 +42,29 @@ describe('GET /Sensor', () => {
     });
 });
 
-
-describe('POST /Sensor', () => {
+describe('GET /sensor', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .post(`/Sensor`)
+            .get(`/sensors`)
+            .send({
+                take: 10,
+                page: 0,
+            })
+            .expect('Content-Type', /json/)
+            .expect(202)
+            .end((err, res) => {
+                if (err) return done(err)
+                expect(res.body.error_type).toBeUndefined()
+                done()
+            });
+    });
+});
+
+
+describe('POST /sensor', () => {
+    it('should return 202 & valid response', done => {
+        request(server)
+            .post(`/sensor`)
             .send({
                 code: "00",
                 sku: "SK000000001",
@@ -85,7 +85,7 @@ describe('POST /Sensor', () => {
 
     it('should return 400 & validation error', done => {
         request(server)
-            .post(`/Sensor`)
+            .post(`/sensor`)
             .send({
 
             })
@@ -99,10 +99,10 @@ describe('POST /Sensor', () => {
     });
 });
 
-describe('PATCH /Sensor', () => {
+describe('PATCH /sensor', () => {
     it('should return 400 & validation error message', done => {
         request(server)
-            .patch(`/Sensor`)
+            .patch(`/sensor`)
             .send({
 
             })
@@ -117,7 +117,7 @@ describe('PATCH /Sensor', () => {
 
     it('should return 202 & the patched sensor', done => {
         request(server)
-            .patch(`/Sensor`)
+            .patch(`/sensor`)
             .send({
                 code: "00",
                 sku: "SK111111110"
@@ -132,10 +132,10 @@ describe('PATCH /Sensor', () => {
     });
 });
 
-describe('DELETE /Sensor', () => {
+describe('DELETE /sensor', () => {
     it('should return 202 & DELETE Sensor & valid response', done => {
         request(server)
-            .delete(`/Sensor`)
+            .delete(`/sensor`)
             .send({
                 code: "00",
             })

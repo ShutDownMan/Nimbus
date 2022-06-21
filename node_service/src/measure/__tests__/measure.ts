@@ -10,10 +10,10 @@ beforeAll(async () => {
 });
 
 
-describe('GET /Measures', () => {
+describe('GET /measures', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .get(`/Measures`)
+            .get(`/measures`)
             .send({
                 take: 10,
             })
@@ -28,7 +28,7 @@ describe('GET /Measures', () => {
 
     it('should return 202 & valid response', done => {
         request(server)
-            .get(`/Measures`)
+            .get(`/measures`)
             .send({
                 take: 10,
                 page: 0,
@@ -43,10 +43,10 @@ describe('GET /Measures', () => {
     });
 });
 
-describe('POST /Measure', () => {
+describe('POST /measure', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .post(`/Measure`)
+            .post(`/measure`)
             .send({
                 code: "00",
                 name: "a test name",
@@ -63,7 +63,7 @@ describe('POST /Measure', () => {
 
     it('should return 400 & validation error', done => {
         request(server)
-            .post(`/Measure`)
+            .post(`/measure`)
             .send({
 
             })
@@ -77,10 +77,10 @@ describe('POST /Measure', () => {
     });
 });
 
-describe('PATCH /Measure', () => {
+describe('PATCH /measure', () => {
     it('should return 400 & validation error message', done => {
         request(server)
-            .patch(`/Measure`)
+            .patch(`/measure`)
             .send({
 
             })
@@ -95,7 +95,7 @@ describe('PATCH /Measure', () => {
 
     it('should return 202 & the patched measure', done => {
         request(server)
-            .patch(`/Measure`)
+            .patch(`/measure`)
             .send({
                 code: "00",
                 description: "test description"
@@ -110,10 +110,10 @@ describe('PATCH /Measure', () => {
     });
 });
 
-describe('DELETE /Measure', () => {
+describe('DELETE /measure', () => {
     it('should return 202 & DELETE Measure & valid response', done => {
         request(server)
-            .delete(`/Measure`)
+            .delete(`/measure`)
             .send({
                 code: "00",
             })

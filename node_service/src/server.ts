@@ -25,67 +25,74 @@ export async function createServer(): Promise<Express> {
     /// Equation Endpoints
 
     app.post(
-        '/Equation',
+        '/equation',
         EquationInsertHandler
     );
 
     app.delete(
-        '/Equation',
+        '/equation',
         EquationDeleteHandler
     );
 
     /// Sensor Endpoints
 
     app.get(
-        '/Sensors',
+        '/sensors',
         SensorsFetchHandler
     );
 
     app.get(
-        '/Sensor',
+        '/sensor',
         SensorFetchHandler
     );
 
     app.post(
-        '/Sensor',
+        '/sensor',
         SensorInsertHandler
     );
 
     app.patch(
-        '/Sensor',
+        '/sensor',
         SensorPatchHandler
     );
 
     app.delete(
-        '/Sensor',
+        '/sensor',
         SensorDeleteHandler
     );
 
     /// Measure Endpoints
 
     app.get(
-        '/Measures',
+        '/measures',
         MeasuresFetchHandler
     );
 
     app.get(
-        '/Measure',
+        '/measure',
         MeasureFetchHandler
     );
 
     app.post(
-        '/Measure',
+        '/measure',
         MeasureInsertHandler
     );
 
     app.patch(
-        '/Measure',
+        '/measure',
         MeasurePatchHandler
     );
 
     app.delete(
-        '/Measure',
+        '/measure',
         MeasureDeleteHandler
+    );
+
+    /// Report Endpoints
+
+    app.get(
+        '/reports/today',
+
     );
 
     return app;
