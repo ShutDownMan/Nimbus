@@ -9,6 +9,58 @@ beforeAll(async () => {
     server = await createServer();
 });
 
+describe('GET /Sensors', () => {
+    it('should return 202 & valid response', done => {
+        request(server)
+            .get(`/Sensors`)
+            .send({
+                take: 10,
+            })
+            .expect('Content-Type', /json/)
+            .expect(202)
+            .end((err, res) => {
+                if (err) return done(err)
+                expect(res.body.error_type).toBeUndefined()
+                done()
+            });
+    });
+
+    it('should return 202 & valid response', done => {
+        request(server)
+            .get(`/Sensors`)
+            .send({
+                take: 10,
+                page: 0,
+            })
+            .expect('Content-Type', /json/)
+            .expect(202)
+            .end((err, res) => {
+                if (err) return done(err)
+                expect(res.body.error_type).toBeUndefined()
+                done()
+            });
+    });
+});
+
+describe('GET /Sensor', () => {
+    it('should return 202 & valid response', done => {
+        request(server)
+            .get(`/Sensors`)
+            .send({
+                take: 10,
+                page: 0,
+            })
+            .expect('Content-Type', /json/)
+            .expect(202)
+            .end((err, res) => {
+                if (err) return done(err)
+                expect(res.body.error_type).toBeUndefined()
+                done()
+            });
+    });
+});
+
+
 describe('POST /Sensor', () => {
     it('should return 202 & valid response', done => {
         request(server)

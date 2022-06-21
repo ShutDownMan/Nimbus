@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { EquationDeleteHandler, EquationInsertHandler } from './equation/equation';
-import { MeasureDeleteHandler, MeasureFetchHandler, MeasureInsertHandler, MeasurePatchHandler } from './measure/measure';
-import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler } from './sensor/sensor';
+import { MeasureDeleteHandler, MeasureFetchHandler, MeasureInsertHandler, MeasurePatchHandler, MeasuresFetchHandler } from './measure/measure';
+import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler, SensorsFetchHandler } from './sensor/sensor';
 import { StationHandler } from './station/station';
 
 export async function createServer(): Promise<Express> {
@@ -37,6 +37,11 @@ export async function createServer(): Promise<Express> {
     /// Sensor Endpoints
 
     app.get(
+        '/Sensors',
+        SensorsFetchHandler
+    );
+
+    app.get(
         '/Sensor',
         SensorFetchHandler
     );
@@ -57,6 +62,11 @@ export async function createServer(): Promise<Express> {
     );
 
     /// Measure Endpoints
+
+    app.get(
+        '/Measures',
+        MeasuresFetchHandler
+    );
 
     app.get(
         '/Measure',

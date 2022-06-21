@@ -3,6 +3,12 @@ import { assert, number, object, optional, refine, string, union } from "superst
 import { HandlerErrors } from "../handler-error/handler-error";
 import PrismaGlobal from "../prisma";
 
+/// model for getting all clients
+const SensorsFetch = object({
+    take: number(),
+    page: optional(number()),
+});
+
 const SensorFetchModel = object({
     code: string(),
 });
@@ -36,6 +42,44 @@ const SensorPatchModel = object({
 const SensorDeleteModel = object({
     code: string(),
 });
+
+export async function SensorsFetchHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
+    /// get prisma connection
+    const prisma = PrismaGlobal.getInstance().prisma;
+
+    let reqBody = req.body;
+    /// validate input
+    try {
+        assert(reqBody, SensorsFetch);
+    } catch (error) {
+        console.log("Error trying to get sensors: ", error);
+
+        return res.status(400).json({
+            message: "Couldn't validate data.",
+            error_type: HandlerErrors.ValidationError,
+        });
+    }
+
+    /// getting records
+    try {
+        let sensors = await prisma.sensor.findMany({
+            take: reqBody.take,
+            ...(reqBody.page && {
+                skip: reqBody.take * reqBody.page,
+            }),
+        });
+
+        return res.status(202).json(sensors)
+    } catch (error) {
+        console.log("Error trying to get sensors: ", error);
+
+        return res.status(500).json({
+            message: "Database error when fetching sensors.",
+            error_type: HandlerErrors.DatabaseError,
+        });
+    }
+    
+}
 
 /**
  * Handler for fetching sensor
