@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
-import { EquationHandler } from './equation/equation';
+import { EquationDeleteHandler, EquationInsertHandler } from './equation/equation';
+import { MeasureDeleteHandler, MeasureFetchHandler, MeasureInsertHandler, MeasurePatchHandler } from './measure/measure';
 import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler } from './sensor/sensor';
 import { StationHandler } from './station/station';
 
@@ -14,15 +15,26 @@ export async function createServer(): Promise<Express> {
         res.send('Express + TypeScript Server');
     });
     
+    /// Station Endpoints
+
     app.post(
         '/Station',
         StationHandler
     );
     
+    /// Equation Endpoints
+
     app.post(
         '/Equation',
-        EquationHandler
+        EquationInsertHandler
     );
+
+    app.delete(
+        '/Equation',
+        EquationDeleteHandler
+    );
+
+    /// Sensor Endpoints
 
     app.get(
         '/Sensor',
@@ -42,6 +54,28 @@ export async function createServer(): Promise<Express> {
     app.delete(
         '/Sensor',
         SensorDeleteHandler
+    );
+
+    /// Measure Endpoints
+
+    app.get(
+        '/Measure',
+        MeasureFetchHandler
+    );
+
+    app.post(
+        '/Measure',
+        MeasureInsertHandler
+    );
+
+    app.patch(
+        '/Measure',
+        MeasurePatchHandler
+    );
+
+    app.delete(
+        '/Measure',
+        MeasureDeleteHandler
     );
 
     return app;

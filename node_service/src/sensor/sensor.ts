@@ -165,7 +165,7 @@ export async function SensorPatchHandler(req: Request, res: Response, next: Next
             SKU: reqBody.sku,
             lifespan: reqBody.lifespan,
             Manufacturer: {
-                connect: {
+                update: {
                     id: reqBody.manufacturer?.id,
                 }
             },

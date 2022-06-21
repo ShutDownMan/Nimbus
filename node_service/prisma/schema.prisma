@@ -73,8 +73,8 @@ model Farm_Station {
   id         Int      @id(map: "Farm_Station_pk") @default(autoincrement())
   id_Farm    Int?
   id_Station Int?
-  Farm       Farm?    @relation(fields: [id_Farm], references: [id], map: "Farm_fk")
-  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
+  Farm       Farm?    @relation(fields: [id_Farm], references: [id], onDelete: Cascade, map: "Farm_fk")
+  Station    Station? @relation(fields: [id_Station], references: [id], onDelete: Cascade, map: "Station_fk")
 }
 
 model Manufacturer {
@@ -91,7 +91,7 @@ model MeasuredData {
   convertedValue                      Float?
   timestamp                           DateTime?                      @db.Timestamptz(6)
   code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
-  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "Station_Sensor_MeasurementUnit_fk")
+  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: Cascade, map: "Station_Sensor_MeasurementUnit_fk")
 
   @@index([timestamp], map: "timestamp_index")
 }
@@ -152,7 +152,7 @@ model Sensor {
   SKU                            String?
   lifespan                       DateTime?                        @db.Timestamptz(6)
   id_Manufacturer                Int?
-  Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], map: "Manufacturer_fk")
+  Manufacturer                   Manufacturer?                    @relation(fields: [id_Manufacturer], references: [id], onDelete: Cascade, map: "Manufacturer_fk")
   Sensor_MeasurementUnit         Sensor_MeasurementUnit[]
   Station_Sensor                 Station_Sensor[]
   Station_Sensor_MeasurementUnit Station_Sensor_MeasurementUnit[]
@@ -173,9 +173,9 @@ model Sensor_MeasurementUnit {
   id_Sensor                      Int?
   id_MeasurementUnit             Int?
   id_SensorMeasurementConversion Int?
-  MeasurementUnit                MeasurementUnit?             @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
-  Sensor                         Sensor?                      @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
-  SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], map: "SensorMeasurementConversion_fk")
+  MeasurementUnit                MeasurementUnit?             @relation(fields: [id_MeasurementUnit], references: [id], onDelete: Cascade, map: "MeasurementUnit_fk")
+  Sensor                         Sensor?                      @relation(fields: [id_Sensor], references: [id], onDelete: Cascade, map: "Sensor_fk")
+  SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], onDelete: Cascade, map: "SensorMeasurementConversion_fk")
 
   @@unique([id_MeasurementUnit, id_Sensor], map: "id_Sensor_id_MeasurementUnit_uq")
 }
@@ -215,8 +215,8 @@ model Station_Sensor {
   id         Int      @id(map: "StationSensor_pk") @default(autoincrement())
   id_Sensor  Int?
   id_Station Int?
-  Sensor     Sensor?  @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
-  Station    Station? @relation(fields: [id_Station], references: [id], map: "Station_fk")
+  Sensor     Sensor?  @relation(fields: [id_Sensor], references: [id], onDelete: Cascade, map: "Sensor_fk")
+  Station    Station? @relation(fields: [id_Station], references: [id], onDelete: Cascade, map: "Station_fk")
 
   @@unique([id_Station, id_Sensor], map: "id_Station_id_Sensor_uq")
 }
@@ -227,9 +227,9 @@ model Station_Sensor_MeasurementUnit {
   id_Station         Int?
   id_Sensor          Int?
   id_MeasurementUnit Int?
-  MeasurementUnit    MeasurementUnit? @relation(fields: [id_MeasurementUnit], references: [id], map: "MeasurementUnit_fk")
-  Sensor             Sensor?          @relation(fields: [id_Sensor], references: [id], map: "Sensor_fk")
-  Station            Station?         @relation(fields: [id_Station], references: [id], map: "Station_fk")
+  MeasurementUnit    MeasurementUnit? @relation(fields: [id_MeasurementUnit], references: [id], onDelete: Cascade, map: "MeasurementUnit_fk")
+  Sensor             Sensor?          @relation(fields: [id_Sensor], references: [id], onDelete: Cascade, map: "Sensor_fk")
+  Station            Station?         @relation(fields: [id_Station], references: [id], onDelete: Cascade, map: "Station_fk")
   MeasuredData       MeasuredData[]
   TimeSeries         TimeSeries[]
 }
@@ -245,8 +245,8 @@ model TimeSeries {
   max                                 Float?
   code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
   id_TimeSeriesInterval               Int?
-  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "code_Station_Sensor_MeasurementUnit_fk")
-  TimeSeriesInterval                  TimeSeriesInterval?            @relation(fields: [id_TimeSeriesInterval], references: [id], map: "TimeSeriesInterval_fk")
+  Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: Cascade, map: "code_Station_Sensor_MeasurementUnit_fk")
+  TimeSeriesInterval                  TimeSeriesInterval?            @relation(fields: [id_TimeSeriesInterval], references: [id], onDelete: Cascade, map: "TimeSeriesInterval_fk")
 }
 
 model TimeSeriesInterval {

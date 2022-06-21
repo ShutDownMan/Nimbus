@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { prisma, Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { object, string, assert, optional } from "superstruct";
 import { HandlerError, HandlerErrors } from "../handler-error/handler-error";
@@ -9,7 +9,14 @@ const EquationInsertModel = object({
     description: string(),
     sensor: optional(string()),
     measurementUnit: optional(string()),
-})
+});
+
+const EquationDeleteModel = object({
+    description: optional(string()),
+    sensor: optional(string()),
+    measurementUnit: optional(string()),
+});
+
 
 /**
  * Handler for the equation insertion
@@ -18,12 +25,15 @@ const EquationInsertModel = object({
  * @param next 
  * @returns 
  */
-export async function EquationHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
+export async function EquationInsertHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     /// first validate request body
-    let reqBody = await validateEquation(req, res, next);
+    let reqBody = req.body;
+    try {
+        assert(reqBody, EquationInsertModel);
+    } catch (error) {
+        /// if it failed valiation
+        console.log("Error trying to insert stations: ", error);
 
-    /// if it failed valiation
-    if (!reqBody) {
         /// return an error status code
         let errorRes: HandlerError = {
             message: "Bad Request, couldn't validate data.",
@@ -104,25 +114,49 @@ export async function EquationHandler(req: Request, res: Response, next: NextFun
 }
 
 /**
- * Validate an object containing the needed equation information
+ * Handler for the equation insertion
  * @param req 
  * @param res 
  * @param next 
- * @returns null if couldn't validate and the body if validate correctly
+ * @returns 
  */
-async function validateEquation(req: Request, res: Response, next: NextFunction) {
-    console.debug("Handling Stations");
-    console.debug(req.body);
-
+export async function EquationDeleteHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
+    /// first validate request body
     let reqBody = req.body;
-    /// validate input
     try {
-        assert(reqBody, EquationInsertModel);
+        assert(reqBody, EquationDeleteModel);
     } catch (error) {
-        console.log("Error trying to insert stations: ", error);
+        /// if it failed valiation
+        console.log("Error trying to delete stations: ", error);
 
-        return null;
+        /// return an error status code
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't validate data.",
+            error_type: HandlerErrors.ValidationError
+        };
+
+        return res.status(400).json(errorRes);
     }
 
-    return reqBody;
+    const prisma = PrismaGlobal.getInstance().prisma;
+
+    await prisma.sensorMeasurementConversion.deleteMany({
+        where: {
+            OR: {
+                description: reqBody.description,
+                Sensor_MeasurementUnit: {
+                    some: {
+                        Sensor: {
+                            code: reqBody.sensor
+                        },
+                        MeasurementUnit: {
+                            code: reqBody.measurementUnit
+                        },
+                    }
+                },
+            },
+        }
+    });
+
+    return res.status(202).json({ message: "equation was deleted sucessfully" });
 }

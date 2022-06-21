@@ -50,7 +50,7 @@ describe('DELETE /equation', () => {
         request(server)
             .delete(`/equation`)
             .send({
-                code: "00",
+                description: "teste",
             })
             .expect('Content-Type', /json/)
             .expect(202)

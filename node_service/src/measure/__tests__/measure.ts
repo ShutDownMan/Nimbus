@@ -9,48 +9,44 @@ beforeAll(async () => {
     server = await createServer();
 });
 
-describe('POST /Sensor', () => {
+describe('POST /Measure', () => {
     it('should return 202 & valid response', done => {
         request(server)
-            .post(`/Sensor`)
+            .post(`/Measure`)
             .send({
                 code: "00",
-                sku: "SK000000001",
-                lifespan: faker.date.future(),
-                manufacturer: {
-                    name: faker.company.companyName(),
-                    country: "BR",
-                },
+                name: "a test name",
+                description: "a description",
             })
             .expect('Content-Type', /json/)
             .expect(202)
             .end((err, res) => {
-                if (err) return done(err)
-                expect(res.body.error_type).toBeUndefined()
-                done()
+                if (err) return done(err);
+                expect(res.body.error_type).toBeUndefined();
+                done();
             });
     });
 
     it('should return 400 & validation error', done => {
         request(server)
-            .post(`/Sensor`)
+            .post(`/Measure`)
             .send({
 
             })
             .expect('Content-Type', /json/)
             .expect(400)
             .end((err, res) => {
-                if (err) return done(err)
-                expect(res.body.error_type).toBeDefined()
-                done()
+                if (err) return done(err);
+                expect(res.body.error_type).toBeDefined();
+                done();
             });
     });
 });
 
-describe('PATCH /Sensor', () => {
+describe('PATCH /Measure', () => {
     it('should return 400 & validation error message', done => {
         request(server)
-            .patch(`/Sensor`)
+            .patch(`/Measure`)
             .send({
 
             })
@@ -63,12 +59,12 @@ describe('PATCH /Sensor', () => {
             })
     });
 
-    it('should return 202 & the patched sensor', done => {
+    it('should return 202 & the patched measure', done => {
         request(server)
-            .patch(`/Sensor`)
+            .patch(`/Measure`)
             .send({
                 code: "00",
-                sku: "SK111111110"
+                description: "test description"
             })
             .expect('Content-Type', /json/)
             .expect(202)
@@ -80,19 +76,19 @@ describe('PATCH /Sensor', () => {
     });
 });
 
-describe('DELETE /Sensor', () => {
-    it('should return 202 & DELETE Sensor & valid response', done => {
+describe('DELETE /Measure', () => {
+    it('should return 202 & DELETE Measure & valid response', done => {
         request(server)
-            .delete(`/Sensor`)
+            .delete(`/Measure`)
             .send({
                 code: "00",
             })
             .expect('Content-Type', /json/)
             .expect(202)
             .end((err, res) => {
-                if (err) return done(err)
-                expect(res.body.error_type).toBeUndefined()
-                done()
+                if (err) return done(err);
+                expect(res.body.error_type).toBeUndefined();
+                done();
             });
     });
 });
