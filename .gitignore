@@ -2,3 +2,4 @@
 .env.test
 grafana_service/data*
 postgres_service/backups
+dist

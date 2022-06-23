@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="1558,634" last-zoom="0.7" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="5125,1196" last-zoom="1.35" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -20,58 +20,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
  bypassrls="true">
 </role>
 
-<database name="SmartFarm" encoding="UTF8" is-template="false" allow-conns="true" append-at-eod="true">
+<database name="SmartFarm" encoding="UTF8" is-template="false" allow-conns="true" append-at-eod="true" prepend-at-bod="true">
 	<role name="smartfarmer"/>
-	<appended-sql><![CDATA[INSERT INTO "SensorMeasurementConversion" ("equation", "description")
-VALUES
-    ('20.25 * raw - 8.1', 'equação de conversão dos valores do anemômetro'),
-    ('raw / (17.8846 - 0.01306 * raw)', 'equação de conversão dos valores da umidade do chão, solo davis'),
-    ('raw * 598.8024', 'equação de conversão dos valores da placa solar');
-]]></appended-sql>
 </database>
 
 <schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<table name="Station" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
+<extension name="postgis">
 	<schema name="public"/>
-	<role name="smartfarmer"/>
-	<position x="2380" y="1060"/>
-	<column name="id" not-null="true">
-		<type name="serial" length="0"/>
-	</column>
-	<column name="code" not-null="true">
-		<type name="char" length="12"/>
-	</column>
-	<column name="description">
-		<type name="text" length="0"/>
-	</column>
-	<column name="creationTS" default-value="now()">
-		<type name="timestamp with time zone" length="0" with-timezone="true"/>
-	</column>
-	<column name="active" not-null="true" default-value="true">
-		<type name="boolean" length="0"/>
-	</column>
-	<column name="deactivationTS">
-		<type name="timestamp with time zone" length="0" with-timezone="true"/>
-	</column>
-<constraint name="Station_pk" type="pk-constr" table="public.&quot;Station&quot;">
-	<columns names="id" ref-type="src-columns"/>
-</constraint>
-
-<constraint name="Station_Code_Unique" type="uq-constr" table="public.&quot;Station&quot;">
-	<columns names="code" ref-type="src-columns"/>
-</constraint>
-
-
-	<customidxs object-type="column">
-		<object name="id_StationModel" index="6"/>
-	</customidxs>
-
-	<customidxs object-type="constraint">
-		<object name="StationModel_fk" index="2"/>
-	</customidxs>
-</table>
+	<comment><![CDATA[PostGIS geometry, geography, and raster spatial types and functions]]></comment>
+</extension>
 
 <table name="StationModel" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
@@ -98,13 +57,49 @@ VALUES
 
 </table>
 
-<relationship name="Station_has_Model" type="rel1n" layers="0"
-	 src-col-pattern="{sc}_{st}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 src-table="public.&quot;StationModel&quot;"
-	 dst-table="public.&quot;Station&quot;"
-	 src-required="false" dst-required="false"/>
+<table name="Station" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="public"/>
+	<role name="smartfarmer"/>
+	<position x="2380" y="1060"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="char" length="12"/>
+	</column>
+	<column name="location">
+		<type name="geometry" length="0" spatial-type="POINT" variation="0" srid="0"/>
+		<comment><![CDATA[current position of station]]></comment>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="creationTS" default-value="now()">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="deactivationTS">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+<constraint name="Station_pk" type="pk-constr" table="public.&quot;Station&quot;">
+	<columns names="id" ref-type="src-columns"/>
+</constraint>
+
+<constraint name="Station_Code_Unique" type="uq-constr" table="public.&quot;Station&quot;">
+	<columns names="code" ref-type="src-columns"/>
+</constraint>
+
+
+	<customidxs object-type="column">
+		<object name="id_StationModel" index="7"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="StationModel_fk" index="2"/>
+	</customidxs>
+</table>
 
 <table name="Station_Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
@@ -147,7 +142,7 @@ VALUES
 		<type name="text" length="0"/>
 	</column>
 	<column name="lifespan">
-		<type name="interval" length="0"/>
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
 	</column>
 <constraint name="Sensor_pk" type="pk-constr" table="public.&quot;Sensor&quot;">
 	<columns names="id" ref-type="src-columns"/>
@@ -173,7 +168,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Sensor&quot;"
 	 dst-table="public.&quot;Station_Sensor&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <table name="MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
@@ -201,12 +201,15 @@ VALUES
 
 </table>
 
-<table name="Sensor_MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="Sensor_MeasurementUnit" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="9" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="4080" y="1100"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
+	</column>
+	<column name="priority" default-value="0">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="precision">
 		<type name="double precision" length="0"/>
@@ -226,9 +229,9 @@ VALUES
 
 
 	<customidxs object-type="column">
-		<object name="id_MeasurementUnit" index="5"/>
-		<object name="id_Sensor" index="4"/>
-		<object name="id_SensorMeasurementConversion" index="6"/>
+		<object name="id_MeasurementUnit" index="6"/>
+		<object name="id_Sensor" index="5"/>
+		<object name="id_SensorMeasurementConversion" index="7"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -244,7 +247,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;MeasurementUnit&quot;"
 	 dst-table="public.&quot;Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="true" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="-1.79046" y="-7.69198"/>
+	</label>
+</relationship>
 
 <relationship name="Sensor_has_many_MeasurementUnit_Sensor" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"
@@ -252,12 +260,17 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Sensor&quot;"
 	 dst-table="public.&quot;Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="true" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="-3.6264" y="-9.15212"/>
+	</label>
+</relationship>
 
 <table name="SensorMeasurementConversion" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
-	<position x="4080" y="740"/>
+	<position x="4080" y="820"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -279,7 +292,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;SensorMeasurementConversion&quot;"
 	 dst-table="public.&quot;Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="6.11332" y="-33"/>
+	</label>
+</relationship>
 
 <table name="Manufacturer" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
@@ -311,7 +329,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Manufacturer&quot;"
 	 dst-table="public.&quot;Sensor&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <table name="MeasuredData" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
@@ -341,7 +364,7 @@ VALUES
 <table name="TimeSeries" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="12" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
-	<position x="3800" y="2740"/>
+	<position x="3780" y="2740"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -405,7 +428,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;TimeSeriesInterval&quot;"
 	 dst-table="public.&quot;TimeSeries&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <table name="Country" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
@@ -428,6 +456,10 @@ VALUES
 	<columns names="code" ref-type="src-columns"/>
 </constraint>
 
+	<initial-data>
+<![CDATA[id•name•code⸣
+•Brasil•BR]]>
+	</initial-data>
 </table>
 
 <relationship name="country_has_many_Manufacturer" type="rel1n" layers="0"
@@ -476,7 +508,8 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Station&quot;"
 	 dst-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE"/>
 
 <relationship name="MeasurementUnit_has_many_MeasuredData_Pivot" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"
@@ -484,7 +517,8 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;MeasurementUnit&quot;"
 	 dst-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE"/>
 
 <relationship name="Sensor_has_many_MeasuredData_Pivot" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"
@@ -492,7 +526,8 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Sensor&quot;"
 	 dst-table="public.&quot;Station_Sensor_MeasurementUnit&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE"/>
 
 <relationship name="Station_has_many_Station_Sensor" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"
@@ -500,7 +535,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Station&quot;"
 	 dst-table="public.&quot;Station_Sensor&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <function name="Update_SSM_Pivots"
 		window-func="false"
@@ -602,7 +642,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Farm&quot;"
 	 dst-table="public.&quot;Farm_Station&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <relationship name="Station_has_many_Farm_Station" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"
@@ -610,7 +655,12 @@ VALUES
 	 src-fk-pattern="{st}_fk"
 	 src-table="public.&quot;Station&quot;"
 	 dst-table="public.&quot;Farm_Station&quot;"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false"
+	del-action="CASCADE">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <table name="User" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="13" z-value="0">
 	<schema name="public"/>
@@ -1105,14 +1155,22 @@ VALUES
 	<columns names="id_Station,id_Sensor" ref-type="src-columns"/>
 </constraint>
 
+<relationship name="Station_has_Model" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 src-table="public.&quot;StationModel&quot;"
+	 dst-table="public.&quot;Station&quot;"
+	 src-required="false" dst-required="false"/>
+
 <constraint name="Station_Sensor_MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;MeasuredData&quot;">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;MeasuredData&quot;">
 	<columns names="code_Station_Sensor_MeasurementUnit" ref-type="src-columns"/>
 	<columns names="code" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="code_Station_Sensor_MeasurementUnit_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;TimeSeries&quot;">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" table="public.&quot;TimeSeries&quot;">
 	<columns names="code_Station_Sensor_MeasurementUnit" ref-type="src-columns"/>
 	<columns names="code" ref-type="dst-columns"/>
 </constraint>
@@ -1126,9 +1184,13 @@ VALUES
 	</label>
 </relationship>
 
-<relationship name="&quot;rel_TimeSeries_Station_Sensor_MeasurementUnit&quot;" type="relfk" layers="0"
+<relationship name="rel_TimeSeries_Station_Sensor_MeasurementUnit" type="relfk" layers="0"
 	 src-table="public.&quot;TimeSeries&quot;"
 	 dst-table="public.&quot;Station_Sensor_MeasurementUnit&quot;" reference-fk="code_Station_Sensor_MeasurementUnit_fk"
-	 src-required="false" dst-required="true"/>
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="8.9947" y="-0.0999568"/>
+	</label>
+</relationship>
 
 </dbmodel>
