@@ -156,11 +156,13 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
         /// calculate results for the whole day
         let measure_results = {
-            count: lodash.sumBy(measured_data, (c) => c ? 0 : 1),
-            mean: lodash.meanBy(measured_data, (c) => c.convertedValue),
-            high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
-            low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
-            sum: lodash.sumBy(measured_data, (c) => Number(madrugada_check(c))),
+            day: {
+                count: lodash.sumBy(measured_data, (c) => c ? 0 : 1),
+                mean: lodash.meanBy(measured_data, (c) => c.convertedValue),
+                high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
+                low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
+                sum: lodash.sumBy(measured_data, (c) => Number(madrugada_check(c))),
+            }
         };
 
         /// divide them up and calculate the results
@@ -253,7 +255,7 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
                 orderBy: {
                     timestamp: "asc",
                 },
-            });                
+            });
         } catch (error) {
             console.log("Error trying to get measured data: ", error);
 
@@ -265,14 +267,16 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
         /// calculate results for the last hour
         let last_hour_results = {
-            count: lodash.sumBy(last_hour_data, (c) => c ? 0 : 1),
-            mean: lodash.meanBy(last_hour_data, (c) => c.convertedValue),
-            high: lodash.maxBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
-            low: lodash.minBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
-            sum: lodash.sumBy(last_hour_data, (c) => Number(madrugada_check(c))),
+            last_hour: {
+                count: lodash.sumBy(last_hour_data, (c) => c ? 0 : 1),
+                mean: lodash.meanBy(last_hour_data, (c) => c.convertedValue),
+                high: lodash.maxBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
+                low: lodash.minBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
+                sum: lodash.sumBy(last_hour_data, (c) => Number(madrugada_check(c))),
+            }
         };
 
-        /// append to result dictionary calculated results
+        /// append to result dictionary calulated results
         measures_results[measure.Sensor.code] = {
             ...measure_results,
             ...day_quarters_results,
@@ -280,5 +284,5 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         };
     }
 
-    return res.status(202).json(measures_results);
+    return res.status(200).json(measures_results);
 }
