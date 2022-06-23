@@ -89,7 +89,7 @@ model MeasuredData {
   id                                  Int                            @id(map: "MeasuredData_pk") @default(autoincrement())
   rawValue                            Float
   convertedValue                      Float?
-  timestamp                           DateTime?                      @db.Timestamptz(6)
+  timestamp                           DateTime                       @db.Timestamptz(6)
   code_Station_Sensor_MeasurementUnit String                         @db.Char(16)
   Station_Sensor_MeasurementUnit      Station_Sensor_MeasurementUnit @relation(fields: [code_Station_Sensor_MeasurementUnit], references: [code], onDelete: Cascade, map: "Station_Sensor_MeasurementUnit_fk")
 
@@ -167,14 +167,15 @@ model SensorMeasurementConversion {
 
 model Sensor_MeasurementUnit {
   id                             Int                          @id(map: "MeasurementUnit_Sensor_pk") @default(autoincrement())
+  priority                       Int?                         @default(0)
   precision                      Float?
   minValue                       Float?
   maxValue                       Float?
-  id_Sensor                      Int?
-  id_MeasurementUnit             Int?
+  id_Sensor                      Int
+  id_MeasurementUnit             Int
   id_SensorMeasurementConversion Int?
-  MeasurementUnit                MeasurementUnit?             @relation(fields: [id_MeasurementUnit], references: [id], onDelete: Cascade, map: "MeasurementUnit_fk")
-  Sensor                         Sensor?                      @relation(fields: [id_Sensor], references: [id], onDelete: Cascade, map: "Sensor_fk")
+  MeasurementUnit                MeasurementUnit              @relation(fields: [id_MeasurementUnit], references: [id], onDelete: Cascade, map: "MeasurementUnit_fk")
+  Sensor                         Sensor                       @relation(fields: [id_Sensor], references: [id], onDelete: Cascade, map: "Sensor_fk")
   SensorMeasurementConversion    SensorMeasurementConversion? @relation(fields: [id_SensorMeasurementConversion], references: [id], onDelete: Cascade, map: "SensorMeasurementConversion_fk")
 
   @@unique([id_MeasurementUnit, id_Sensor], map: "id_Sensor_id_MeasurementUnit_uq")
@@ -191,6 +192,7 @@ model State {
 model Station {
   id                             Int                              @id(map: "Station_pk") @default(autoincrement())
   code                           String                           @unique(map: "Station_Code_Unique") @db.Char(12)
+  location                       Unsupported("geometry")?
   description                    String?
   creationTS                     DateTime?                        @default(now()) @db.Timestamptz(6)
   active                         Boolean                          @default(true)
@@ -287,4 +289,12 @@ model User_Phone {
   id_Phone Int?
   Phone    Phone? @relation(fields: [id_Phone], references: [id], map: "Phone_fk")
   User     User?  @relation(fields: [id_User], references: [id], map: "User_fk")
+}
+
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
 }

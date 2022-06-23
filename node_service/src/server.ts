@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { EquationDeleteHandler, EquationInsertHandler } from './equation/equation';
 import { MeasureDeleteHandler, MeasureFetchHandler, MeasureInsertHandler, MeasurePatchHandler, MeasuresFetchHandler } from './measure/measure';
+import { StationReportTodayFetchHandler } from './reports/reports';
 import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler, SensorsFetchHandler } from './sensor/sensor';
 import { StationHandler } from './station/station';
 
@@ -91,8 +92,8 @@ export async function createServer(): Promise<Express> {
     /// Report Endpoints
 
     app.get(
-        '/reports/today',
-
+        '/station/reports/today',
+        StationReportTodayFetchHandler
     );
 
     return app;

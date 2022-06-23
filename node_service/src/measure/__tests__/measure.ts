@@ -9,7 +9,6 @@ beforeAll(async () => {
     server = await createServer();
 });
 
-
 describe('GET /measures', () => {
     it('should return 202 & valid response', done => {
         request(server)
@@ -26,18 +25,15 @@ describe('GET /measures', () => {
             });
     });
 
-    it('should return 202 & valid response', done => {
+    it('should return 400 & error', done => {
         request(server)
             .get(`/measures`)
-            .send({
-                take: 10,
-                page: 0,
-            })
+            .send({})
             .expect('Content-Type', /json/)
-            .expect(202)
+            .expect(400)
             .end((err, res) => {
                 if (err) return done(err)
-                expect(res.body.error_type).toBeUndefined()
+                expect(res.body.error_type).toBeDefined()
                 done()
             });
     });
@@ -49,8 +45,8 @@ describe('POST /measure', () => {
             .post(`/measure`)
             .send({
                 code: "00",
-                name: "a test name",
-                description: "a description",
+                name: faker.lorem.word(),
+                description: faker.lorem.sentence(),
             })
             .expect('Content-Type', /json/)
             .expect(202)
@@ -98,7 +94,7 @@ describe('PATCH /measure', () => {
             .patch(`/measure`)
             .send({
                 code: "00",
-                description: "test description"
+                description: faker.lorem.sentence(),
             })
             .expect('Content-Type', /json/)
             .expect(202)

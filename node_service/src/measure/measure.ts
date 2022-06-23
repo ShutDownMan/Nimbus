@@ -63,8 +63,7 @@ export async function MeasuresFetchHandler(req: Request, res: Response, next: Ne
             message: "Database error when fetching measures.",
             error_type: HandlerErrors.DatabaseError,
         });
-    }
-    
+    }   
 }
 
 /**
