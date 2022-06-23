@@ -1,4 +1,4 @@
-import { array, assert, object, record, string, number } from 'superstruct'
+import { optional, array, assert, object, record, string, number, boolean } from 'superstruct'
 import { MeasuredData, Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HandlerError, HandlerErrors } from "../handler-error/handler-error";
@@ -24,6 +24,20 @@ const StationInsertModel = record(
     string(),
     SensorInsertModel
 );
+
+const StationDeleteModel = object({
+    code: string()
+});
+
+const StationMetadataModel = object({
+    code: string(),
+    description: optional(string()),
+    latitude: optional(number()),
+    longitude: optional(number()),
+    altitude: optional(number()),
+    active: optional(boolean()),
+    deactivationTS: optional(string()),
+});
 
 /**
  * Endpoint for data insertion from a collection of stations
@@ -206,4 +220,104 @@ async function dataConvertionHandler(measuredData: MeasuredData, sensorCode: str
     } else {
         console.log("No equation available for data conversion");
     }
+}
+
+export async function StationDeleteHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
+    console.debug("Handling Stations");
+    console.debug(req.body);
+
+    let reqBody = req.body;
+    /// validate input
+    try {
+        assert(reqBody, StationDeleteModel);
+    } catch (error) {
+        console.log("Error trying to delete stations: ", error);
+        
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't validate data.",
+            error_type: HandlerErrors.ValidationError
+        };
+        
+        return res.status(400).json(errorRes);
+    }
+
+    const prisma = PrismaGlobal.getInstance().prisma;
+
+    try {
+        await prisma.station.delete({
+            where: {
+                code: reqBody.code,
+            }
+        });
+    } catch (error) {
+        console.log("Error trying to delete stations: ", error);
+        
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't delete data.",
+            error_type: HandlerErrors.ValidationError
+        };
+        
+        return res.status(400).json(errorRes);
+    }
+
+    return res.status(202).json({ message: "station data were deleted sucessfully" });
+}
+
+export async function StationMetadataHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
+    console.debug("Handling Station Metadata");
+    console.debug(req.body);
+
+    let reqBody = req.body;
+    /// validate input
+    try {
+        assert(reqBody, StationMetadataModel);
+    } catch (error) {
+        console.log("Error trying to insert stations: ", error);
+
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't validate data.",
+            error_type: HandlerErrors.ValidationError
+        };
+
+        return res.status(400).json(errorRes);
+    }
+
+    const prisma = PrismaGlobal.getInstance().prisma;
+
+    /// update station data
+    let stationData: Prisma.StationUpdateInput = {
+        code: reqBody.code,
+        description: reqBody.description,
+        active: reqBody.active,
+        ...(reqBody.deactivationTS && {
+            deactivationTS: new Date(Date.parse(reqBody.deactivationTS)),
+        }),
+    };
+
+    /// update station general metadata
+    try {
+        let stationUpdated = await prisma.station.update({
+            where: {
+                code: reqBody.code,
+            },
+            data: stationData
+        });
+    
+        /// updating station metadata latitude and longitude
+        if(reqBody.latitude && reqBody.longitude) {
+            await prisma.$executeRaw`UPDATE Station SET POINT(${reqBody.latitude}, ${reqBody.longitude}) WHERE code = ${reqBody.code}`;
+        }
+            
+    } catch (error) {
+        console.log("Error trying to update station: ", error);
+
+        let errorRes: HandlerError = {
+            message: "Bad Request, couldn't update station.",
+            error_type: HandlerErrors.ValidationError
+        };
+
+        return res.status(400).json(errorRes);
+    }
+    
+    return res.status(202).json({ message: "station metadata was updated sucessfully" });
 }

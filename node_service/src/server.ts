@@ -3,7 +3,7 @@ import { EquationDeleteHandler, EquationInsertHandler } from './equation/equatio
 import { MeasureDeleteHandler, MeasureFetchHandler, MeasureInsertHandler, MeasurePatchHandler, MeasuresFetchHandler } from './measure/measure';
 import { StationReportTodayFetchHandler } from './reports/reports';
 import { SensorDeleteHandler, SensorFetchHandler, SensorInsertHandler, SensorPatchHandler, SensorsFetchHandler } from './sensor/sensor';
-import { StationHandler } from './station/station';
+import { StationDeleteHandler, StationHandler, StationMetadataHandler } from './station/station';
 
 export async function createServer(): Promise<Express> {
 
@@ -19,10 +19,25 @@ export async function createServer(): Promise<Express> {
     /// Station Endpoints
 
     app.post(
-        '/Station',
+        '/station',
         StationHandler
     );
-    
+
+    app.delete(
+        '/station',
+        StationDeleteHandler
+    );
+
+    app.get(
+        '/station/reports/today',
+        StationReportTodayFetchHandler
+    );
+
+    app.patch(
+        '/station/metadata',
+        StationMetadataHandler
+    );
+
     /// Equation Endpoints
 
     app.post(
@@ -87,13 +102,6 @@ export async function createServer(): Promise<Express> {
     app.delete(
         '/measure',
         MeasureDeleteHandler
-    );
-
-    /// Report Endpoints
-
-    app.get(
-        '/station/reports/today',
-        StationReportTodayFetchHandler
     );
 
     return app;
