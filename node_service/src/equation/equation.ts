@@ -50,52 +50,52 @@ export async function EquationInsertHandler(req: Request, res: Response, next: N
     let sensor = null;
     let measurementUnit = null;
 
-    /// if both sensor and measurement unit were given
-    if (sensorCode && measurementUnitCode) {
-        /// find them both
-        sensor = await prisma.sensor.findUnique({
-            where: {
-                code: sensorCode
-            }
-        });
-        measurementUnit = await prisma.measurementUnit.findUnique({
-            where: {
-                code: measurementUnitCode
-            }
-        });
+    try {
+        /// if both sensor and measurement unit were given
+        if (sensorCode && measurementUnitCode) {
+            /// find them both
+            sensor = await prisma.sensor.findUnique({
+                where: {
+                    code: sensorCode
+                }
+            });
+            measurementUnit = await prisma.measurementUnit.findUnique({
+                where: {
+                    code: measurementUnitCode
+                }
+            });
 
-        if (!sensor || !measurementUnit) {
-            /// return an error status code
-            let errorRes: HandlerError = {
-                message: "Bad Request, could not find sensor or measurement unit",
-                error_type: HandlerErrors.DatabaseError
-            };
-            console.debug("Couldn't find sensor or measurement unit");
-            console.debug(sensor);
-            console.debug(measurementUnit);
+            if (!sensor || !measurementUnit) {
+                /// return an error status code
+                let errorRes: HandlerError = {
+                    message: "Bad Request, could not find sensor or measurement unit",
+                    error_type: HandlerErrors.DatabaseError
+                };
+                console.debug("Couldn't find sensor or measurement unit");
+                console.debug(sensor);
+                console.debug(measurementUnit);
 
-            return res.status(400).json(errorRes);
+                return res.status(400).json(errorRes);
+            }
         }
-    }
 
-    /// insert new equation on the database
-    let equationData: Prisma.SensorMeasurementConversionCreateInput = {
-        equation: reqBody.equation,
-        description: reqBody.description,
-        /// if sensor and measurement unit is given they are already connected
-        ...(sensor && measurementUnit && {
-            Sensor_MeasurementUnit: {
-                connect: {
-                    id_MeasurementUnit_id_Sensor: {
-                        id_Sensor: sensor.id,
-                        id_MeasurementUnit: measurementUnit.id,
+        /// insert new equation on the database
+        let equationData: Prisma.SensorMeasurementConversionCreateInput = {
+            equation: reqBody.equation,
+            description: reqBody.description,
+            /// if sensor and measurement unit is given they are already connected
+            ...(sensor && measurementUnit && {
+                Sensor_MeasurementUnit: {
+                    connect: {
+                        id_MeasurementUnit_id_Sensor: {
+                            id_Sensor: sensor.id,
+                            id_MeasurementUnit: measurementUnit.id,
+                        }
                     }
                 }
-            }
-        }),
-    }
+            }),
+        }
 
-    try {
         await prisma.sensorMeasurementConversion.create({
             data: equationData,
         });
