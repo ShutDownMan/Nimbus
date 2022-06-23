@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   postgres:
-    image: postgres:alpine
+    image: postgis/postgis
     ports:
       - 5443:5432
     environment:
