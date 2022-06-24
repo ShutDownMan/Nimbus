@@ -109,3 +109,13 @@ curl --request POST \
 	"sensor": "05",
 	"measurementUnit": "0a"
 }'
+
+curl --request POST \
+  --url http://nimbus.smap.agr.br:8080/equation \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"equation": "raw * 1",
+	"description": "equação de conversão dos valores de pressao atmosferica",
+	"sensor": "00",
+	"measurementUnit": "07"
+}'

@@ -52,3 +52,12 @@ curl --request PATCH \
 	"name": "Rain",
 	"description": "How much did it rain."
 }'
+
+curl --request PATCH \
+  --url http://nimbus.smap.agr.br:8080/measure \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"code": "07",
+	"name": "Pressure",
+	"description": "How much is the atmosphere weighing on us."
+}'
