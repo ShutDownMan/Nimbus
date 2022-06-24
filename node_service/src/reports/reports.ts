@@ -304,6 +304,7 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
         /// append to result dictionary calulated results
         measures_results[measure.MeasurementUnit.code] = {
+            measure: measure.MeasurementUnit,
             sensor: measure.Sensor,
             ...measure_results,
             ...day_quarters_results,
