@@ -303,7 +303,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         console.log("preparing to return results");
 
         /// append to result dictionary calulated results
-        measures_results[measure.Sensor.code] = {
+        measures_results[measure.MeasurementUnit.code] = {
+            sensor: measure.Sensor,
             ...measure_results,
             ...day_quarters_results,
             ...last_hour_results,

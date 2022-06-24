@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="5125,1196" last-zoom="1.35" max-obj-count="37"
+<dbmodel pgmodeler-ver="1.0.0-alpha" use-changelog="false" author="Jedson Gabriel" last-position="4145,1061" last-zoom="1.35" max-obj-count="37"
 	 default-schema="public" default-owner="smartfarmer"
 	 layers="Default layer"
 	 active-layers="0"
@@ -124,7 +124,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</customidxs>
 </table>
 
-<table name="Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="Sensor" layers="0" gen-alter-cmds="true" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="smartfarmer"/>
 	<position x="3480" y="1100"/>
@@ -134,6 +134,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="code" not-null="true">
 		<type name="char" length="2"/>
 		<comment><![CDATA[The self-reporting code given by the stations sensors]]></comment>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
 	</column>
 	<column name="serial">
 		<type name="integer" length="0"/>
@@ -154,7 +157,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 
 	<customidxs object-type="column">
-		<object name="id_Manufacturer" index="5"/>
+		<object name="id_Manufacturer" index="6"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
