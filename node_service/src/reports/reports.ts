@@ -56,6 +56,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
     /// get prisma connection
     const prisma = PrismaGlobal.getInstance().prisma;
 
+    console.log("validating input");
+
     let reqBody = req.body;
     /// validate input
     try {
@@ -68,6 +70,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
             error_type: HandlerErrors.ValidationError,
         });
     }
+
+    console.log("getting all measures from station");
 
     /// get all measures from station
     let station_measures;
@@ -101,8 +105,12 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         });
     }
 
+    console.log("preprocessing measures");
+
     /// remove duplicate measures by priority
     let groups_station_measures = lodash.groupBy(station_measures, (c) => c.MeasurementUnit.code);
+
+    console.log("filtering out measures");
 
     /// filter out the measures not specified
     let sorted_station_measures = lodash
@@ -113,10 +121,14 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         return g.pop();
     });
 
+    console.log("separating quarters");
+
     /// get all measured data from every measure from today
     let today = new Date();
     let today_start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
     let today_end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+
+    console.log("fetching measured data");
 
     let measures_results: any = {};
     for (let measure of filtered_station_measures) {
@@ -153,6 +165,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
                 error_type: HandlerErrors.DatabaseError,
             });
         }
+
+        console.log("processing measured data");
 
         /// calculate results for the whole day
         let measure_results = {
@@ -194,6 +208,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
             return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1];
         };
 
+        console.log("processing quarters");
+
         /// calculate the results for each quarter
         let day_quarters_results = {
             madrugada: {
@@ -225,6 +241,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
                 sum: lodash.sumBy(measured_data, (c) => c.convertedValue && noite_check(c) ? c.convertedValue : 0),
             },
         };
+
+        console.log("fetching results from last hour");
 
         /// calculate the results for the last hour
         let last_hour_start = new Date(today_start.getTime() - (60 * 60 * 1000));
@@ -265,6 +283,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
             });
         }
 
+        console.log("processing results from last hour");
+
         /// calculate results for the last hour
         let last_hour_results = {
             last_hour: {
@@ -275,6 +295,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
                 sum: lodash.sumBy(last_hour_data, (c) => Number(madrugada_check(c))),
             }
         };
+
+        console.log("preparing to return results");
 
         /// append to result dictionary calulated results
         measures_results[measure.Sensor.code] = {
