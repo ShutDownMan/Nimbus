@@ -192,53 +192,57 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         const madrugada_check = (c: MeasuredData | null) => {
             return c && c.timestamp && c.timestamp.getTime() >= day_quarters.madrugada[0] && c.timestamp.getTime() <= day_quarters.madrugada[1];
         };
+        const madrugada_values = measured_data.filter(madrugada_check);
 
         /// check if timestamp is in the second quarter of the day
         const manha_check = (c: MeasuredData | null) => {
             return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.manha[0] && c.timestamp.getTime() <= day_quarters.manha[1];
         };
+        const manha_values = measured_data.filter(manha_check);
 
         /// check if timestamp is in the third quarter of the day
         const tarde_check = (c: MeasuredData | null) => {
             return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.tarde[0] && c.timestamp.getTime() <= day_quarters.tarde[1];
         };
+        const tarde_values = measured_data.filter(tarde_check);
 
         /// check if timestamp is in the fourth quarter of the day
         const noite_check = (c: MeasuredData | null) => {
             return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1];
         };
+        const noite_values = measured_data.filter(noite_check);
 
         console.log("processing quarters");
 
         /// calculate the results for each quarter
         let day_quarters_results = {
             madrugada: {
-                count: measured_data.map((m): number => madrugada_check(m) ? 1 : 0).reduce((a, b) => a + b, 0),
-                mean: lodash.meanBy(measured_data, madrugada_check),
-                high: lodash.maxBy(measured_data, madrugada_check)?.convertedValue || 0,
-                low: lodash.minBy(measured_data, madrugada_check)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue && madrugada_check(c) ? c.convertedValue : 0),
+                count: madrugada_values.length,
+                mean: lodash.meanBy(madrugada_values, (c) => c.convertedValue),
+                high: lodash.maxBy(madrugada_values, (c) => c.convertedValue),
+                low: lodash.minBy(madrugada_values, (c) => c.convertedValue),
+                sum: lodash.sumBy(madrugada_values, (c) => c.convertedValue || 0),
             },
             manha: {
-                count: measured_data.map((m): number => manha_check(m) ? 1 : 0).reduce((a, b) => a + b, 0),
-                mean: lodash.meanBy(measured_data, manha_check),
-                high: lodash.maxBy(measured_data, manha_check)?.convertedValue || 0,
-                low: lodash.minBy(measured_data, manha_check)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue && manha_check(c) ? c.convertedValue : 0),
+                count: manha_values.length,
+                mean: lodash.meanBy(manha_values, (c) => c.convertedValue),
+                high: lodash.maxBy(manha_values, (c) => c.convertedValue),
+                low: lodash.minBy(manha_values, (c) => c.convertedValue),
+                sum: lodash.sumBy(manha_values, (c) => c.convertedValue || 0),
             },
             tarde: {
-                count: measured_data.map((m): number => tarde_check(m) ? 1 : 0).reduce((a, b) => a + b, 0),
-                mean: lodash.meanBy(measured_data, tarde_check),
-                high: lodash.maxBy(measured_data, tarde_check)?.convertedValue || 0,
-                low: lodash.minBy(measured_data, tarde_check)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue && tarde_check(c) ? c.convertedValue : 0),
+                count: tarde_values.length,
+                mean: lodash.meanBy(tarde_values, (c) => c.convertedValue),
+                high: lodash.maxBy(tarde_values, (c) => c.convertedValue),
+                low: lodash.minBy(tarde_values, (c) => c.convertedValue),
+                sum: lodash.sumBy(tarde_values, (c) => c.convertedValue || 0),
             },
             noite: {
-                count: measured_data.map((m): number => noite_check(m) ? 1 : 0).reduce((a, b) => a + b, 0),
-                mean: lodash.meanBy(measured_data, noite_check),
-                high: lodash.maxBy(measured_data, noite_check)?.convertedValue || 0,
-                low: lodash.minBy(measured_data, noite_check)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue && noite_check(c) ? c.convertedValue : 0),
+                count: noite_values.length,
+                mean: lodash.meanBy(noite_values, (c) => c.convertedValue),
+                high: lodash.maxBy(noite_values, (c) => c.convertedValue),
+                low: lodash.minBy(noite_values, (c) => c.convertedValue),
+                sum: lodash.sumBy(noite_values, (c) => c.convertedValue || 0),
             },
         };
 
@@ -288,11 +292,11 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         /// calculate results for the last hour
         let last_hour_results = {
             last_hour: {
-                count: lodash.sumBy(last_hour_data, (c) => c ? 0 : 1),
+                count: last_hour_data.length,
                 mean: lodash.meanBy(last_hour_data, (c) => c.convertedValue),
-                high: lodash.maxBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
-                low: lodash.minBy(last_hour_data, (c) => c.convertedValue)?.convertedValue || 0,
-                sum: lodash.sumBy(last_hour_data, (c) => Number(madrugada_check(c))),
+                high: lodash.maxBy(last_hour_data, (c) => c.convertedValue),
+                low: lodash.minBy(last_hour_data, (c) => c.convertedValue),
+                sum: lodash.sumBy(last_hour_data, (c) => c.convertedValue || 0),
             }
         };
 
