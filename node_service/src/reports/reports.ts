@@ -175,7 +175,7 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
                 mean: lodash.meanBy(measured_data, (c) => c.convertedValue),
                 high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
                 low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue && madrugada_check(c) ? c.convertedValue : 0),
+                sum: lodash.sumBy(measured_data, (c) => c.convertedValue ? c.convertedValue : 0),
             }
         };
 
