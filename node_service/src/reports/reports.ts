@@ -171,11 +171,11 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         /// calculate results for the whole day
         let measure_results = {
             day: {
-                count: lodash.sumBy(measured_data, (c) => c ? 0 : 1),
+                count: measured_data.length,
                 mean: lodash.meanBy(measured_data, (c) => c.convertedValue),
-                high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
-                low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue || 0,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue ? c.convertedValue : 0),
+                high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue,
+                sum: lodash.sumBy(measured_data, (c) => c.convertedValue || 0),
             }
         };
 
@@ -219,29 +219,29 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
             madrugada: {
                 count: madrugada_values.length,
                 mean: lodash.meanBy(madrugada_values, (c) => c.convertedValue),
-                high: lodash.maxBy(madrugada_values, (c) => c.convertedValue),
-                low: lodash.minBy(madrugada_values, (c) => c.convertedValue),
+                high: lodash.maxBy(madrugada_values, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(madrugada_values, (c) => c.convertedValue)?.convertedValue,
                 sum: lodash.sumBy(madrugada_values, (c) => c.convertedValue || 0),
             },
             manha: {
                 count: manha_values.length,
                 mean: lodash.meanBy(manha_values, (c) => c.convertedValue),
-                high: lodash.maxBy(manha_values, (c) => c.convertedValue),
-                low: lodash.minBy(manha_values, (c) => c.convertedValue),
+                high: lodash.maxBy(manha_values, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(manha_values, (c) => c.convertedValue)?.convertedValue,
                 sum: lodash.sumBy(manha_values, (c) => c.convertedValue || 0),
             },
             tarde: {
                 count: tarde_values.length,
                 mean: lodash.meanBy(tarde_values, (c) => c.convertedValue),
-                high: lodash.maxBy(tarde_values, (c) => c.convertedValue),
-                low: lodash.minBy(tarde_values, (c) => c.convertedValue),
+                high: lodash.maxBy(tarde_values, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(tarde_values, (c) => c.convertedValue)?.convertedValue,
                 sum: lodash.sumBy(tarde_values, (c) => c.convertedValue || 0),
             },
             noite: {
                 count: noite_values.length,
                 mean: lodash.meanBy(noite_values, (c) => c.convertedValue),
-                high: lodash.maxBy(noite_values, (c) => c.convertedValue),
-                low: lodash.minBy(noite_values, (c) => c.convertedValue),
+                high: lodash.maxBy(noite_values, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(noite_values, (c) => c.convertedValue)?.convertedValue,
                 sum: lodash.sumBy(noite_values, (c) => c.convertedValue || 0),
             },
         };
@@ -294,8 +294,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
             last_hour: {
                 count: last_hour_data.length,
                 mean: lodash.meanBy(last_hour_data, (c) => c.convertedValue),
-                high: lodash.maxBy(last_hour_data, (c) => c.convertedValue),
-                low: lodash.minBy(last_hour_data, (c) => c.convertedValue),
+                high: lodash.maxBy(last_hour_data, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(last_hour_data, (c) => c.convertedValue)?.convertedValue,
                 sum: lodash.sumBy(last_hour_data, (c) => c.convertedValue || 0),
             }
         };
