@@ -167,6 +167,7 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         }
 
         console.log("processing measured data");
+        measured_data = measured_data.filter((m) => m.convertedValue !== null);
 
         /// calculate results for the whole day
         let measure_results = {
@@ -190,25 +191,25 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
         /// check if timestamp is in the first quarter of the day
         const madrugada_check = (c: MeasuredData | null) => {
-            return c && c.timestamp && c.timestamp.getTime() >= day_quarters.madrugada[0] && c.timestamp.getTime() <= day_quarters.madrugada[1];
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.madrugada[0] && c.timestamp.getTime() <= day_quarters.madrugada[1]);
         };
         const madrugada_values = measured_data.filter(madrugada_check);
 
         /// check if timestamp is in the second quarter of the day
         const manha_check = (c: MeasuredData | null) => {
-            return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.manha[0] && c.timestamp.getTime() <= day_quarters.manha[1];
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.manha[0] && c.timestamp.getTime() <= day_quarters.manha[1]);
         };
         const manha_values = measured_data.filter(manha_check);
 
         /// check if timestamp is in the third quarter of the day
         const tarde_check = (c: MeasuredData | null) => {
-            return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.tarde[0] && c.timestamp.getTime() <= day_quarters.tarde[1];
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.tarde[0] && c.timestamp.getTime() <= day_quarters.tarde[1]);
         };
         const tarde_values = measured_data.filter(tarde_check);
 
         /// check if timestamp is in the fourth quarter of the day
         const noite_check = (c: MeasuredData | null) => {
-            return c && c.convertedValue && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1];
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1]);
         };
         const noite_values = measured_data.filter(noite_check);
 
