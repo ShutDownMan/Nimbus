@@ -142,33 +142,33 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         /// divide them up and calculate the results
         let today_start_milis = today_start.getTime();
         let day_quarters = {
-            madrugada: [today_start_milis + 0, today_start_milis + (24 * 60 * 60 * 1000 * 0.25)],
-            manha: [today_start_milis + (24 * 60 * 60 * 1000 * 0.25), today_start_milis + (24 * 60 * 60 * 1000 * 0.5)],
-            tarde: [today_start_milis + (24 * 60 * 60 * 1000 * 0.5), today_start_milis + (24 * 60 * 60 * 1000 * 0.75)],
-            noite: [today_start_milis + (24 * 60 * 60 * 1000 * 0.75), today_start_milis + (24 * 60 * 60 * 1000 * 1)],
+            dawn: [today_start_milis, today_start_milis + (today_end.getTime() - today_start_milis) / 4],
+            morning: [today_start_milis + (today_end.getTime() - today_start_milis) / 4, today_start_milis + (today_end.getTime() - today_start_milis) / 2],
+            afternoon: [today_start_milis + (today_end.getTime() - today_start_milis) / 2, today_start_milis + (today_end.getTime() - today_start_milis) * 3 / 4],
+            dusk: [today_start_milis + (today_end.getTime() - today_start_milis) * 3 / 4, today_start_milis + (today_end.getTime() - today_start_milis)],
         };
 
         /// check if timestamp is in the first quarter of the day
         const madrugada_check = (c: MeasuredData | null) => {
-            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.madrugada[0] && c.timestamp.getTime() <= day_quarters.madrugada[1]);
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.dawn[0] && c.timestamp.getTime() <= day_quarters.dawn[1]);
         };
         const madrugada_values = measured_values.filter(madrugada_check);
 
         /// check if timestamp is in the second quarter of the day
         const manha_check = (c: MeasuredData | null) => {
-            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.manha[0] && c.timestamp.getTime() <= day_quarters.manha[1]);
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.morning[0] && c.timestamp.getTime() <= day_quarters.morning[1]);
         };
         const manha_values = measured_values.filter(manha_check);
 
         /// check if timestamp is in the third quarter of the day
         const tarde_check = (c: MeasuredData | null) => {
-            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.tarde[0] && c.timestamp.getTime() <= day_quarters.tarde[1]);
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.afternoon[0] && c.timestamp.getTime() <= day_quarters.afternoon[1]);
         };
         const tarde_values = measured_values.filter(tarde_check);
 
         /// check if timestamp is in the fourth quarter of the day
         const noite_check = (c: MeasuredData | null) => {
-            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1]);
+            return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.dusk[0] && c.timestamp.getTime() <= day_quarters.dusk[1]);
         };
         const noite_values = measured_values.filter(noite_check);
 
