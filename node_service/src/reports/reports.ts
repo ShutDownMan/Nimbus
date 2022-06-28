@@ -11,47 +11,6 @@ const ReportTodayFetch = object({
     measures: optional(array(string())),
 });
 
-/*
-    para cada grandeza [temperatura, umidade, pressao atmosferica, radiacao solar, vento media, vento rajadas, umidade solo, temperatura solo]
-    {
-        media manha
-        media tarde
-        media noite
-        media madrugada
-        media dia
-    }
-
-    {
-        "__measure_code": {
-            name: string,
-            count: {
-                madrugada: number,
-                manha: number,
-                tarde: number,
-                noite: number,
-                dia: number,
-            },
-            average: {},
-            min: {},
-            max: {},
-            sum: {},
-        },
-    }
-
-    para cada grandeza [temperatura, umidade, pressao atmosferica, radiacao solar, vento media, vento rajadas, umidade solo, temperatura solo]
-    {
-        valores
-    }
-
-
-    balanco hidrico
-    grau dia - a partir do começo da plantacao
-
-    TODO: MODELAR TALHÕES
-    TODO: MODELAR TRABALHAMENTO DE DADOS
-    TODO: MODELAR INICIO DE PLANTACAO
-*/
-
 export async function StationReportTodayFetchHandler(req: Request, res: Response, next: NextFunction): Promise<any> {
     /// get prisma connection
     const prisma = PrismaGlobal.getInstance().prisma;
@@ -133,9 +92,9 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
     let measures_results: any = {};
     for (let measure of filtered_station_measures) {
         if (!measure) continue;
-        let measured_data;
+        let measured_values;
         try {
-            measured_data = await prisma.measuredData.findMany({
+            measured_values = await prisma.measuredData.findMany({
                 where: {
                     Station_Sensor_MeasurementUnit: {
                         Station: {
@@ -167,16 +126,16 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         }
 
         console.log("processing measured data");
-        measured_data = measured_data.filter((m) => m.convertedValue !== null);
+        measured_values = measured_values.filter((m) => m.convertedValue !== null);
 
         /// calculate results for the whole day
         let measure_results = {
             day: {
-                count: measured_data.length,
-                mean: lodash.meanBy(measured_data, (c) => c.convertedValue),
-                high: lodash.maxBy(measured_data, (c) => c.convertedValue)?.convertedValue,
-                low: lodash.minBy(measured_data, (c) => c.convertedValue)?.convertedValue,
-                sum: lodash.sumBy(measured_data, (c) => c.convertedValue || 0),
+                count: measured_values.length,
+                mean: lodash.meanBy(measured_values, (c) => c.convertedValue),
+                high: lodash.maxBy(measured_values, (c) => c.convertedValue)?.convertedValue,
+                low: lodash.minBy(measured_values, (c) => c.convertedValue)?.convertedValue,
+                sum: lodash.sumBy(measured_values, (c) => c.convertedValue || 0),
             }
         };
 
@@ -193,25 +152,25 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         const madrugada_check = (c: MeasuredData | null) => {
             return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.madrugada[0] && c.timestamp.getTime() <= day_quarters.madrugada[1]);
         };
-        const madrugada_values = measured_data.filter(madrugada_check);
+        const madrugada_values = measured_values.filter(madrugada_check);
 
         /// check if timestamp is in the second quarter of the day
         const manha_check = (c: MeasuredData | null) => {
             return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.manha[0] && c.timestamp.getTime() <= day_quarters.manha[1]);
         };
-        const manha_values = measured_data.filter(manha_check);
+        const manha_values = measured_values.filter(manha_check);
 
         /// check if timestamp is in the third quarter of the day
         const tarde_check = (c: MeasuredData | null) => {
             return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.tarde[0] && c.timestamp.getTime() <= day_quarters.tarde[1]);
         };
-        const tarde_values = measured_data.filter(tarde_check);
+        const tarde_values = measured_values.filter(tarde_check);
 
         /// check if timestamp is in the fourth quarter of the day
         const noite_check = (c: MeasuredData | null) => {
             return Boolean(c && c.timestamp && c.timestamp.getTime() >= day_quarters.noite[0] && c.timestamp.getTime() <= day_quarters.noite[1]);
         };
-        const noite_values = measured_data.filter(noite_check);
+        const noite_values = measured_values.filter(noite_check);
 
         console.log("processing quarters");
 
@@ -250,9 +209,9 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         console.log("fetching results from last hour");
 
         /// calculate the results for the last hour
-        let last_hour_start = new Date(today_start.getTime() - (60 * 60 * 1000));
-        let last_hour_end = new Date(today_start.getTime() - (60 * 60 * 1000));
-        last_hour_end.setHours(last_hour_end.getHours() + 1);
+        let last_hour_start = new Date();
+        let last_hour_end = new Date();
+        last_hour_start.setHours(last_hour_start.getHours() + 1);
 
         /// fetching the last hour data
         let last_hour_data;

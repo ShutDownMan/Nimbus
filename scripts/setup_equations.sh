@@ -1,11 +1,10 @@
 
-
 curl --request POST \
   --url http://nimbus.smap.agr.br:8080/equation \
   --header 'Content-Type: application/json' \
   --data '{
-	"equation": "raw / (17.8846 - 0.01306 * raw)",
-	"description": "equação de conversão dos valores da umidade do chão, solo davis",
+	"equation": "100 * raw / (17.8846 - 0.01306 * raw)",
+	"description": "equação de conversão dos valores da umidade do chão do sensor solo davis",
 	"sensor": "02",
 	"measurementUnit": "0e"
 }'
