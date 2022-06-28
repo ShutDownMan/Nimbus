@@ -84,8 +84,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
     /// get all measured data from every measure from today
     let now = new Date();
-    let today_start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    let today_end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    let today_start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let today_end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
     console.log("fetching measured data");
 
