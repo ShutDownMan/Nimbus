@@ -83,9 +83,9 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
     console.log("separating quarters");
 
     /// get all measured data from every measure from today
-    let today = new Date();
-    let today_start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    let today_end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    let now = new Date();
+    let today_start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    let today_end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
     console.log("fetching measured data");
 
@@ -209,9 +209,8 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         console.log("fetching results from last hour");
 
         /// calculate the results for the last hour
-        let last_hour_start = new Date();
-        let last_hour_end = new Date();
-        last_hour_start.setHours(last_hour_start.getHours() + 1);
+        let last_hour_start = new Date(now.getTime() - (60 * 60 * 1000));
+        let last_hour_end = new Date(now.getTime());
 
         /// fetching the last hour data
         let last_hour_data;
@@ -263,7 +262,7 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
         console.log("preparing to return results");
 
         /// append to result dictionary calulated results
-        measures_results[measure.MeasurementUnit.code] = {
+        measures_results[measure.MeasurementUnit.name || measure.MeasurementUnit.code] = {
             measure: measure.MeasurementUnit,
             sensor: measure.Sensor,
             ...measure_results,
