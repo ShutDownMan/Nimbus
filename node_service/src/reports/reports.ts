@@ -141,11 +141,13 @@ export async function StationReportTodayFetchHandler(req: Request, res: Response
 
         /// divide them up and calculate the results
         let today_start_milis = today_start.getTime();
+        let today_end_milis = today_end.getTime();
+        let quarter_milis = (today_end_milis - today_start_milis) / 4;
         let day_quarters = {
-            dawn: [today_start_milis, today_start_milis + (today_end.getTime() - today_start_milis) / 4],
-            morning: [today_start_milis + (today_end.getTime() - today_start_milis) / 4, today_start_milis + (today_end.getTime() - today_start_milis) / 2],
-            afternoon: [today_start_milis + (today_end.getTime() - today_start_milis) / 2, today_start_milis + (today_end.getTime() - today_start_milis) * 3 / 4],
-            dusk: [today_start_milis + (today_end.getTime() - today_start_milis) * 3 / 4, today_start_milis + (today_end.getTime() - today_start_milis)],
+            dawn: [today_start_milis, today_start_milis + quarter_milis],
+            morning: [today_start_milis + quarter_milis, today_start_milis + quarter_milis * 2],
+            afternoon: [today_start_milis + quarter_milis * 2, today_start_milis + quarter_milis * 3],
+            dusk: [today_start_milis + quarter_milis * 3, today_end_milis],
         };
 
         /// check if timestamp is in the first quarter of the day
